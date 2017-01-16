@@ -1,11 +1,5 @@
 package ro.payu.authentication;
 
-import org.apache.http.NameValuePair;
-
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
-import javax.xml.bind.DatatypeConverter;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -13,6 +7,11 @@ import java.util.Comparator;
 import java.util.Formatter;
 import java.util.List;
 import java.util.stream.Collectors;
+
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
+
+import org.apache.http.NameValuePair;
 
 public final class AuthenticationService {
 
@@ -27,13 +26,17 @@ public final class AuthenticationService {
                 .map(nameValuePair -> String.valueOf(nameValuePair.getValue().length()) + nameValuePair.getValue())
                 .collect(Collectors.joining(""));
 
+        return hMacMD5(stringToHash, secretKey);
+    }
+
+    private String hMacMD5(String stringToHash, String secretKey) {
         final SecretKeySpec secretKeySpec = new SecretKeySpec(secretKey.getBytes(StandardCharsets.UTF_8), "HmacMD5");
         final Mac hMacMD5;
 
         try {
             hMacMD5 = Mac.getInstance("HmacMD5");
             hMacMD5.init(secretKeySpec);
-        } catch (NoSuchAlgorithmException|InvalidKeyException e) {
+        } catch (NoSuchAlgorithmException | InvalidKeyException e) {
             throw new RuntimeException(e);
         }
 
