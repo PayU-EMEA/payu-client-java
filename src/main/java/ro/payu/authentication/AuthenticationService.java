@@ -20,9 +20,23 @@ public final class AuthenticationService {
     }
 
     public final String computeSignature(List<NameValuePair> parameters, String secretKey) {
+        return computeSignature(parameters, getParameterNameSortedComparator(), secretKey);
+    }
+
+    public final boolean validateSignature(
+            List<NameValuePair> parameters,
+            Comparator<NameValuePair> comparator,
+            String secretKey, String signature
+    ) {
+        return computeSignature(parameters, comparator, secretKey).equals(signature.toLowerCase());
+    }
+
+    public final String computeSignature(List<NameValuePair> parameters,
+                                         Comparator<NameValuePair> comparator,
+                                         String secretKey) {
 
         final String stringToHash = parameters.stream()
-                .sorted(Comparator.comparing(NameValuePair::getName))
+                .sorted(getParameterNameSortedComparator())
                 .map(nameValuePair -> String.valueOf(nameValuePair.getValue().length()) + nameValuePair.getValue())
                 .collect(Collectors.joining(""));
 
@@ -48,5 +62,9 @@ public final class AuthenticationService {
         }
 
         return formatter.toString();
+    }
+
+    private Comparator<NameValuePair> getParameterNameSortedComparator() {
+        return Comparator.comparing(NameValuePair::getName);
     }
 }
