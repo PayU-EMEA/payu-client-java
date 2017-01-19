@@ -32,7 +32,11 @@ public final class ApiAuthenticationService {
                 .collect(Collectors.toList());
 
 
-        final String signature = authenticationService.computeSignature(parametersWithoutSignature, secretKey);
+        final String signature = authenticationService.computeSignature(
+                parametersWithoutSignature,
+                getParameterNameSortedComparator(),
+                secretKey
+        );
 
         final List<NameValuePair> parametersWithSignature = new ArrayList<>(parametersWithoutSignature);
         parametersWithSignature.add(new BasicNameValuePair(ALU_REQUEST_SIGNATURE_NAME, signature));
@@ -40,7 +44,7 @@ public final class ApiAuthenticationService {
         return parametersWithSignature;
     }
 
-    public boolean verifyAluResponseSignature(final List<NameValuePair> parameters) {
+    public void verifyAluResponseSignature(final List<NameValuePair> parameters) throws BadResponseSignatureException {
         final List<NameValuePair> parametersWithoutSignature = new ArrayList<>();
         String signature = "";
 
@@ -53,7 +57,7 @@ public final class ApiAuthenticationService {
         }
 
         if (signature.equals("")) {
-            return false;
+            throw new BadResponseSignatureException("Missing response signature parameter");
         }
 
         // Sadly, URL_3DS is not included in signature
@@ -61,11 +65,18 @@ public final class ApiAuthenticationService {
                 .filter(nameValuePair -> !(nameValuePair.getName().equals(ALU_RESPONSE_URL_3DS_NAME)))
                 .collect(Collectors.toList());
 
-        return authenticationService.computeSignature(
+        String expectedSignature = authenticationService.computeSignature(
                 parametersWithoutSignatureAnd3DSUrlParameters,
                 getKeepSameParameterOrderComparator(),
                 secretKey
-        ).equals(signature.toLowerCase());
+        );
+        if (!expectedSignature.equals(signature.toLowerCase())) {
+            throw new BadResponseSignatureException("Wrong response signature");
+        }
+    }
+
+    private Comparator<NameValuePair> getParameterNameSortedComparator() {
+        return Comparator.comparing(NameValuePair::getName);
     }
 
     private Comparator<NameValuePair> getKeepSameParameterOrderComparator() {
