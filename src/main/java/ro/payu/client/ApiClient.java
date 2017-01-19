@@ -1,15 +1,17 @@
 package ro.payu.client;
 
-import java.io.UnsupportedEncodingException;
-import java.util.List;
-
 import org.apache.http.HttpException;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 
+import java.io.UnsupportedEncodingException;
+import java.util.List;
+
 public class ApiClient {
+
+    public static final String IDN_ENDPOINT = "/order/idn.php";
 
     final private ApiAuthenticationService apiAuthenticationService;
 
@@ -47,6 +49,34 @@ public class ApiClient {
         final List<NameValuePair> responseParams = aluResponseXmlParser.parseAluResponse(httpResponse);
 
         apiAuthenticationService.verifyAluResponseSignature(responseParams);
+
+        return responseParams;
+    }
+
+    public final List<NameValuePair> callIDN(final List<NameValuePair> parameters) throws CommunicationException, InvalidXmlResponseException, BadResponseSignatureException {
+
+        final List<NameValuePair> requestParams = apiAuthenticationService.addIdnRequestSignature(parameters);
+
+        // create request
+        final HttpPost httpRequest;
+        try {
+            httpRequest = new HttpPost(IDN_ENDPOINT);
+            httpRequest.setEntity(new UrlEncodedFormEntity(requestParams));
+        } catch (UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
+
+        // call http and obtain response
+        final HttpResponse httpResponse;
+        try {
+            httpResponse = apiHttpClient.callHttp(httpRequest);
+        } catch (HttpException e) {
+            throw new CommunicationException(e);
+        }
+
+        final List<NameValuePair> responseParams = aluResponseXmlParser.parseIdnResponse(httpResponse);
+
+        apiAuthenticationService.verifyIdnResponseSignature(responseParams);
 
         return responseParams;
     }
