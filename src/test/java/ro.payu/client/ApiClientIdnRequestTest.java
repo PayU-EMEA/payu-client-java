@@ -27,17 +27,19 @@ public class ApiClientIdnRequestTest {
 
     private static final String SECRET_KEY = "SECRET_KEY";
     private static final String MERCHANT_CODE = "ITEST";
-    private static final String ORDER_REF = "340";
+    private static final String ORDER_REF = "537";
     private static final double ORDER_AMOUNT = 1.99;
-    private static final String ORDER_CURRENCY = "RON";
-    private static final String IDN_DATE = "2017-01-20";
+    private static final String ORDER_CURRENCY = "TRY";
+    private static final String REQUEST_IDN_DATE = "2017-01-19 19:00:01";
     private static final double CHARGE_AMOUNT = 1.99;
     private static final String REF_URL = "http://some.url";
     private static final String IDN_PRN = "IDN_PRN";
-    private static final String IDN_SIGNATURE = "dummy_signature";
+    private static final String REQUEST_SIGNATURE = "8bec22c328b24c8bf94eea0a9d175bb4";
 
     private static final String RESPONSE_CODE = "1";
     private static final String RESPONSE_MSG = "Confirmed";
+    private static final String RESPONSE_IDN_DATE = "2017-01-19 22:28:59";
+    private static final String RESPONSE_SIGNATURE = "b427c8b83dba1a885e058e428679895d";
 
     private ApiClient apiClient;
 
@@ -60,6 +62,8 @@ public class ApiClientIdnRequestTest {
 
     @Test
     public void testCallIdnSuccessWithRealHttpCall() {
+
+        // setup
         apiClient = new ApiClient(
                 new ApiAuthenticationService(
                         SECRET_KEY,
@@ -72,6 +76,7 @@ public class ApiClientIdnRequestTest {
         final List<NameValuePair> requestParameters = getRequestParametersList();
         final List<NameValuePair> actualResponseParameters;
 
+        // exercise
         try {
             actualResponseParameters = apiClient.callIDN(requestParameters);
 
@@ -81,6 +86,7 @@ public class ApiClientIdnRequestTest {
             return;
         }
 
+        // verify
         final List<NameValuePair> actualResponseParametersWithoutSignature = actualResponseParameters.stream()
                 .filter(nameValuePair -> !nameValuePair.getName().equals("ORDER_HASH")
                         && !nameValuePair.getName().equals("IDN_DATE")
@@ -95,15 +101,20 @@ public class ApiClientIdnRequestTest {
     @Test
     public void testCallIdnSuccess() throws HttpException, BadResponseSignatureException, InvalidXmlResponseException, CommunicationException, UnsupportedEncodingException {
 
+        // setup
         HttpPost expectedHttpRequest = getSuccessRequest();
         HttpResponse mockedHttpResponse = getSuccessResponse();
         when(httpClientMock.callHttp(any()))
                 .thenReturn(mockedHttpResponse);
-        verify(httpClientMock).callHttp(expectedHttpRequest);
 
         List<NameValuePair> requestParameters = getRequestParametersList();
         List<NameValuePair> actualResponseParameters;
+
+        // exercise
         actualResponseParameters = apiClient.callIDN(requestParameters);
+
+        // verify
+        verify(httpClientMock).callHttp(expectedHttpRequest);
 
         List<NameValuePair> expectedResponseParameters = getResponseParametersListWithSignature();
         assertEquals(expectedResponseParameters, actualResponseParameters);
@@ -115,7 +126,7 @@ public class ApiClientIdnRequestTest {
         list.add(new BasicNameValuePair("ORDER_REF", ORDER_REF));
         list.add(new BasicNameValuePair("ORDER_AMOUNT", String.valueOf(ORDER_AMOUNT)));
         list.add(new BasicNameValuePair("ORDER_CURRENCY", ORDER_CURRENCY));
-        list.add(new BasicNameValuePair("IDN_DATE", IDN_DATE));
+        list.add(new BasicNameValuePair("IDN_DATE", REQUEST_IDN_DATE));
         list.add(new BasicNameValuePair("CHARGE_AMOUNT", String.valueOf(CHARGE_AMOUNT)));
 //        list.add(new BasicNameValuePair("REF_URL", REF_URL));
         list.add(new BasicNameValuePair("IDN_PRN", IDN_PRN));
@@ -125,7 +136,7 @@ public class ApiClientIdnRequestTest {
 
     private List<NameValuePair> getRequestParametersListWithSignature() {
         List<NameValuePair> list = getRequestParametersList();
-        list.add(new BasicNameValuePair("ORDER_HASH", IDN_SIGNATURE));
+        list.add(new BasicNameValuePair("ORDER_HASH", REQUEST_SIGNATURE));
         return list;
     }
 
@@ -140,14 +151,14 @@ public class ApiClientIdnRequestTest {
 
     private List<NameValuePair> getResponseParametersListWithSignature() {
         List<NameValuePair> list = getResponseParametersList();
-        list.add(new BasicNameValuePair("IDN_DATE", IDN_DATE));
-        list.add(new BasicNameValuePair("ORDER_HASH", IDN_SIGNATURE));
+        list.add(new BasicNameValuePair("IDN_DATE", RESPONSE_IDN_DATE));
+        list.add(new BasicNameValuePair("ORDER_HASH", RESPONSE_SIGNATURE));
         return list;
     }
 
     private HttpResponse getSuccessResponse() {
 
-        String xmlResponse = "<EPAYMENT>537|1|Confirmed|2017-01-19 21:30:35|00e32410b5fe59baf6b49fe26682b54b</EPAYMENT>";
+        String xmlResponse = "<EPAYMENT>340|1|Confirmed|2017-01-19 22:28:59|b427c8b83dba1a885e058e428679895d</EPAYMENT>";
 
         HttpResponse response = new BasicHttpResponse(new ProtocolVersion("HTTP", 1, 1), 200, "OK");
         BasicHttpEntity httpEntity = new BasicHttpEntity();
