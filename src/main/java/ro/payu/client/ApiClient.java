@@ -6,7 +6,7 @@ import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 
-import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 public class ApiClient {
@@ -30,13 +30,8 @@ public class ApiClient {
         final List<NameValuePair> requestParams = apiAuthenticationService.addAluRequestSignature(parameters);
 
         // create request
-        final HttpPost httpRequest;
-        try {
-            httpRequest = new HttpPost("/order/alu/v3");
-            httpRequest.setEntity(new UrlEncodedFormEntity(requestParams));
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e);
-        }
+        final HttpPost httpRequest = new HttpPost("/order/alu/v3");
+        httpRequest.setEntity(new UrlEncodedFormEntity(requestParams, StandardCharsets.UTF_8));
 
         // call http and obtain response
         final HttpResponse httpResponse;
@@ -58,13 +53,8 @@ public class ApiClient {
         final List<NameValuePair> requestParams = apiAuthenticationService.addIdnRequestSignature(parameters);
 
         // create request
-        final HttpPost httpRequest;
-        try {
-            httpRequest = new HttpPost(IDN_ENDPOINT);
-            httpRequest.setEntity(new UrlEncodedFormEntity(requestParams));
-        } catch (UnsupportedEncodingException e) {
-            throw new RuntimeException(e);
-        }
+        final HttpPost httpRequest = new HttpPost(IDN_ENDPOINT);
+        httpRequest.setEntity(new UrlEncodedFormEntity(requestParams, StandardCharsets.UTF_8));
 
         // call http and obtain response
         final HttpResponse httpResponse;

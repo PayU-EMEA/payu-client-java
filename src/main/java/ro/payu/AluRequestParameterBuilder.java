@@ -48,7 +48,7 @@ public class AluRequestParameterBuilder {
         parameters.add(new BasicNameValuePair("EXP_YEAR", "2019"));
 
 
-        parameters.add(new BasicNameValuePair("BILL_ADDRESS", "Home")); //Acasă
+        parameters.add(new BasicNameValuePair("BILL_ADDRESS", "Acasă"));
         parameters.add(new BasicNameValuePair("BILL_CIISSUER", "SPCLEP"));
         parameters.add(new BasicNameValuePair("BILL_CISERIAL", "RT"));
         parameters.add(new BasicNameValuePair("BILL_CINUMBER", "696318"));
