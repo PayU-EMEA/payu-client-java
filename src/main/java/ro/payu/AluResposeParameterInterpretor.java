@@ -7,5 +7,6 @@ import java.util.List;
 public class AluResposeParameterInterpretor {
 
     public void interpretResponseParameters(List<NameValuePair> response) {
+        System.out.println(response);
     }
 }

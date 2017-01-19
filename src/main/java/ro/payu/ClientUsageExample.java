@@ -15,7 +15,7 @@ public class ClientUsageExample {
                         "SECRET_KEY",
                         new AuthenticationService()
                 ),
-                new ApiHttpClient("ro.payu.local", 80, "http"),
+                new ApiHttpClient("tr.payu.local", 80, "http"),
                 new AluResponseXmlParser()
         );
 
