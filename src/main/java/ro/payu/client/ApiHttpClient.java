@@ -17,8 +17,7 @@ public class ApiHttpClient {
     private final HttpHost httpHost;
 
     public ApiHttpClient(String hostname) {
-        httpClient = HttpClients.createDefault();
-        httpHost = new HttpHost(hostname, 443, "https");
+        this(hostname, 443, "https");
     }
 
     public ApiHttpClient(String hostname, int port, String scheme) {

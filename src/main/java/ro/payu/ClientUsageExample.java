@@ -7,7 +7,7 @@ import ro.payu.client.*;
 import java.util.List;
 
 public class ClientUsageExample {
-    public static void main(String[] args) throws BadResponseSignatureException, CommunicationException, InvalidXmlResponseException {
+    public static void main(String[] args) {
 
 
         final ApiClient apiClient = new ApiClient(
@@ -15,16 +15,20 @@ public class ClientUsageExample {
                         "SECRET_KEY",
                         new AuthenticationService()
                 ),
-                new ApiHttpClient("secure.payu.com.tr"),
+                new ApiHttpClient("ro.payu.local", 80, "http"),
                 new AluResponseXmlParser()
         );
 
         final AluRequestParameterBuilder aluRequestParameterBuilder = new AluRequestParameterBuilder();
         final AluResposeParameterInterpretor aluResposeParameterInterpretor = new AluResposeParameterInterpretor();
 
-        final List<NameValuePair> aluRequestParameters = aluRequestParameterBuilder.buildRequestParameters();
-        final List<NameValuePair> aluResponseParameters = apiClient.callALU(aluRequestParameters);
-        aluResposeParameterInterpretor.interpretResponseParameters(aluResponseParameters);
+        try {
+            final List<NameValuePair> aluRequestParameters = aluRequestParameterBuilder.buildRequestParameters();
+            final List<NameValuePair> aluResponseParameters = apiClient.callALU(aluRequestParameters);
+            aluResposeParameterInterpretor.interpretResponseParameters(aluResponseParameters);
+        } catch (Throwable e) {
+            e.printStackTrace();
+        }
 
     }
 
