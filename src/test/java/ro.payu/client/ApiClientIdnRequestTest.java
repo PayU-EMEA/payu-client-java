@@ -4,17 +4,18 @@ import org.apache.http.HttpException;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.ProtocolVersion;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.entity.BasicHttpEntity;
 import org.apache.http.message.BasicHttpResponse;
 import org.apache.http.message.BasicNameValuePair;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.ArgumentCaptor;
 import ro.payu.authentication.AuthenticationService;
 
 import java.io.ByteArrayInputStream;
-import java.io.UnsupportedEncodingException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -34,12 +35,13 @@ public class ApiClientIdnRequestTest {
     private static final double CHARGE_AMOUNT = 1.99;
     private static final String REF_URL = "http://some.url";
     private static final String IDN_PRN = "IDN_PRN";
-    private static final String REQUEST_SIGNATURE = "8bec22c328b24c8bf94eea0a9d175bb4";
+
+    private static final String EXPECTED_REQUEST_SIGNATURE = "58c80797edc20d2ff2717c17c2677a70";
 
     private static final String RESPONSE_CODE = "1";
     private static final String RESPONSE_MSG = "Confirmed";
     private static final String RESPONSE_IDN_DATE = "2017-01-19 22:28:59";
-    private static final String RESPONSE_SIGNATURE = "b427c8b83dba1a885e058e428679895d";
+    private static final String RESPONSE_SIGNATURE = "68b0856fe891167e35fd66305be0e018";
 
     private ApiClient apiClient;
 
@@ -99,10 +101,10 @@ public class ApiClientIdnRequestTest {
     }
 
     @Test
-    public void testCallIdnSuccess() throws HttpException, BadResponseSignatureException, InvalidXmlResponseException, CommunicationException, UnsupportedEncodingException {
+    public void testCallIdnSuccess() throws HttpException, BadResponseSignatureException, InvalidXmlResponseException, CommunicationException, IOException {
 
         // setup
-        HttpPost expectedHttpRequest = getSuccessRequest();
+        List<NameValuePair> expectedHttpRequestParameters = getRequestParametersListWithSignature();
         HttpResponse mockedHttpResponse = getSuccessResponse();
         when(httpClientMock.callHttp(any()))
                 .thenReturn(mockedHttpResponse);
@@ -114,10 +116,15 @@ public class ApiClientIdnRequestTest {
         actualResponseParameters = apiClient.callIDN(requestParameters);
 
         // verify
-        verify(httpClientMock).callHttp(expectedHttpRequest);
-
         List<NameValuePair> expectedResponseParameters = getResponseParametersListWithSignature();
         assertEquals(expectedResponseParameters, actualResponseParameters);
+
+        ArgumentCaptor<HttpPost> argument = ArgumentCaptor.forClass(HttpPost.class);
+        verify(httpClientMock).callHttp(argument.capture());
+        assertEquals("POST", argument.getValue().getMethod());
+        assertEquals(ApiClient.IDN_ENDPOINT, argument.getValue().getURI().getPath());
+        assertEquals("application/x-www-form-urlencoded", argument.getValue().getEntity().getContentType().getValue());
+        assertEquals(expectedHttpRequestParameters, URLEncodedUtils.parse(argument.getValue().getEntity()));
     }
 
     private List<NameValuePair> getRequestParametersList() {
@@ -136,7 +143,7 @@ public class ApiClientIdnRequestTest {
 
     private List<NameValuePair> getRequestParametersListWithSignature() {
         List<NameValuePair> list = getRequestParametersList();
-        list.add(new BasicNameValuePair("ORDER_HASH", REQUEST_SIGNATURE));
+        list.add(new BasicNameValuePair("ORDER_HASH", EXPECTED_REQUEST_SIGNATURE));
         return list;
     }
 
@@ -158,7 +165,7 @@ public class ApiClientIdnRequestTest {
 
     private HttpResponse getSuccessResponse() {
 
-        String xmlResponse = "<EPAYMENT>340|1|Confirmed|2017-01-19 22:28:59|b427c8b83dba1a885e058e428679895d</EPAYMENT>";
+        String xmlResponse = "<EPAYMENT>537|1|Confirmed|2017-01-19 22:28:59|68b0856fe891167e35fd66305be0e018</EPAYMENT>";
 
         HttpResponse response = new BasicHttpResponse(new ProtocolVersion("HTTP", 1, 1), 200, "OK");
         BasicHttpEntity httpEntity = new BasicHttpEntity();
@@ -168,15 +175,5 @@ public class ApiClientIdnRequestTest {
         response.setEntity(httpEntity);
 
         return response;
-    }
-
-    private HttpPost getSuccessRequest() throws UnsupportedEncodingException {
-
-        List<NameValuePair> paramsList = getRequestParametersListWithSignature();
-
-        HttpPost request = new HttpPost(ApiClient.IDN_ENDPOINT);
-        request.setEntity(new UrlEncodedFormEntity(paramsList));
-
-        return request;
     }
 }
