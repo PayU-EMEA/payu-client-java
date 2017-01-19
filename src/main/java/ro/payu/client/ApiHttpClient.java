@@ -26,7 +26,6 @@ public class ApiHttpClient {
         final CloseableHttpResponse httpResponse;
         try {
             httpResponse = httpClient.execute(httpHost, httpRequest);
-            httpClient.close();
         } catch (IOException e) {
             throw new HttpException("Error calling http", e);
         }

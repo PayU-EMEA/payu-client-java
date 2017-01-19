@@ -23,7 +23,7 @@ public class ApiClient {
         this.aluResponseXmlParser = aluResponseXmlParser;
     }
 
-    public final List<NameValuePair> callALU(final List<NameValuePair> parameters) throws BadResponseSignatureException, CommunicationException {
+    public final List<NameValuePair> callALU(final List<NameValuePair> parameters) throws BadResponseSignatureException, CommunicationException, InvalidXmlResponseException {
 
         final List<NameValuePair> requestParams = apiAuthenticationService.addAluRequestSignature(parameters);
 

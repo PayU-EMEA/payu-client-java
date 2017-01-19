@@ -15,21 +15,13 @@ import org.apache.http.NameValuePair;
 
 public final class AuthenticationService {
 
-    public final boolean validateSignature(
-            List<NameValuePair> parameters,
-            Comparator<NameValuePair> comparator,
-            String secretKey, String signature
-    ) {
-        return computeSignature(parameters, comparator, secretKey).equals(signature.toLowerCase());
-    }
-
     public final String computeSignature(List<NameValuePair> parameters,
                                          Comparator<NameValuePair> comparator,
                                          String secretKey) {
 
         final String stringToHash = parameters.stream()
                 .sorted(comparator)
-                .map(nameValuePair -> String.valueOf(nameValuePair.getValue().length()) + nameValuePair.getValue())
+                .map(nameValuePair -> String.valueOf(nameValuePair.getValue().getBytes().length) + nameValuePair.getValue())
                 .collect(Collectors.joining(""));
 
         return hMacMD5(stringToHash, secretKey);
