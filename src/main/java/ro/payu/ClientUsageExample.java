@@ -2,7 +2,10 @@ package ro.payu;
 
 import org.apache.http.NameValuePair;
 import ro.payu.authentication.AuthenticationService;
-import ro.payu.client.*;
+import ro.payu.client.AluResponseXmlParser;
+import ro.payu.client.ApiAuthenticationService;
+import ro.payu.client.ApiClient;
+import ro.payu.client.ApiHttpClient;
 
 import java.util.List;
 
@@ -26,7 +29,8 @@ public class ClientUsageExample {
             final List<NameValuePair> aluRequestParameters = aluRequestParameterBuilder.buildRequestParameters();
             final List<NameValuePair> aluResponseParameters = apiClient.callALU(aluRequestParameters);
             aluResposeParameterInterpretor.interpretResponseParameters(aluResponseParameters);
-        } catch (Throwable e) {
+
+        } catch (Exception e) {
             e.printStackTrace();
         }
 

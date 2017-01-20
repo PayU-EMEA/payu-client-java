@@ -2,7 +2,7 @@ package ro.payu.client;
 
 import org.xml.sax.SAXException;
 
-public class InvalidXmlResponseException extends Throwable {
+public class InvalidXmlResponseException extends Exception {
     public InvalidXmlResponseException(SAXException e) {
         super(e);
     }

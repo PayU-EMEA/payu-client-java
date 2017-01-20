@@ -82,7 +82,7 @@ public class ApiClientIdnRequestTest {
         try {
             actualResponseParameters = apiClient.callIDN(requestParameters);
 
-        } catch (Throwable e) {
+        } catch (Exception e) {
             e.printStackTrace();
             fail(e.getMessage());
             return;
