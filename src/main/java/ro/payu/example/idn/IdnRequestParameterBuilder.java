@@ -1,4 +1,4 @@
-package ro.payu;
+package ro.payu.example.idn;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;

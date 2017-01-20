@@ -1,4 +1,4 @@
-package ro.payu;
+package ro.payu.example;
 
 import org.apache.http.NameValuePair;
 import ro.payu.authentication.AuthenticationService;
@@ -6,16 +6,21 @@ import ro.payu.client.AluResponseXmlParser;
 import ro.payu.client.ApiAuthenticationService;
 import ro.payu.client.ApiClient;
 import ro.payu.client.ApiHttpClient;
+import ro.payu.example.alu.AluRequestParameterBuilder;
+import ro.payu.example.alu.AluResposeParameterInterpretor;
+import ro.payu.example.idn.IdnRequestParameterBuilder;
+import ro.payu.example.idn.IdnResposeParameterInterpreter;
 
 import java.util.List;
 
 public class ClientUsageExample {
 
+    public static final String SERVER_SCHEMA = "http";
+    public static final int SERVER_PORT = 80;
+    public static final String SERVER_HOST = "tr.payu.local";
+
     public static final String MERCHANT_CODE = "PAYU_2";
     public static final String MERCHANT_SECRET_KEY = "SECRET_KEY";
-    public static final String SERVER_HOST = "tr.payu.local";
-    public static final int SERVER_PORT = 80;
-    public static final String SERVER_SCHEMA = "http";
 
     public static void main(String[] args) {
 
