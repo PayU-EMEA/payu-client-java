@@ -6,9 +6,19 @@ import org.apache.http.message.BasicNameValuePair;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 public class AluRequestParameterBuilder {
+
+    private String merchantCode;
+
+    public AluRequestParameterBuilder(String merchantCode) {
+        this.merchantCode = merchantCode;
+
+    }
+
     public List<NameValuePair> buildRequestParameters() {
         final List<NameValuePair> parameters = new ArrayList<>();
 
@@ -16,7 +26,7 @@ public class AluRequestParameterBuilder {
 
         String orderData = LocalDateTime.now(ZoneOffset.UTC).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 
-        parameters.add(new BasicNameValuePair("MERCHANT", "PAYU_2"));
+        parameters.add(new BasicNameValuePair("MERCHANT", merchantCode));
         parameters.add(new BasicNameValuePair("ORDER_REF", orderReference));
         parameters.add(new BasicNameValuePair("ORDER_DATE", orderData));
         parameters.add(new BasicNameValuePair("BACK_REF", "http://dev.indispus.ro/emag/return.php"));
