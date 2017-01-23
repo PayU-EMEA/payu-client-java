@@ -6,8 +6,8 @@ import java.util.List;
 
 public class IdnResponseInterpreter {
 
-    public boolean isSuccess(List<NameValuePair> response) {
-        for (NameValuePair pair : response) {
+    public boolean isSuccess(List<NameValuePair> responseParameters) {
+        for (NameValuePair pair : responseParameters) {
             if (pair.getName().equals("RESPONSE_CODE") && pair.getValue().equals("1")) {
                 return true;
             }
@@ -15,9 +15,9 @@ public class IdnResponseInterpreter {
         return false;
     }
 
-    public void interpretResponseParameters(List<NameValuePair> response) {
+    public void interpretResponseParameters(List<NameValuePair> responseParameters) {
         System.out.println();
         System.out.println("IDN response:");
-        System.out.println(response);
+        System.out.println(responseParameters);
     }
 }

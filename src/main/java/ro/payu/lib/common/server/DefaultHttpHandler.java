@@ -11,11 +11,12 @@ import java.util.List;
 
 public class DefaultHttpHandler implements HttpHandler {
 
+    final private RequestParser requestParser;
     final private RequestProcessor requestProcessor;
     final private ResponseBuilder responseBuilder;
-    private List<NameValuePair> requestParameters;
 
-    public DefaultHttpHandler(RequestProcessor requestProcessor, ResponseBuilder responseBuilder) {
+    public DefaultHttpHandler(RequestParser requestParser, RequestProcessor requestProcessor, ResponseBuilder responseBuilder) {
+        this.requestParser = requestParser;
         this.requestProcessor = requestProcessor;
         this.responseBuilder = responseBuilder;
     }
@@ -23,10 +24,10 @@ public class DefaultHttpHandler implements HttpHandler {
     @Override
     public void handle(HttpExchange httpExchange) throws IOException {
 
-        // parse request
-        requestParameters = requestProcessor.getRequestParameters(httpExchange.getRequestBody());
+        final List<NameValuePair> requestParameters = requestParser.getRequestParameters(httpExchange.getRequestBody());
 
-        // send response
+        requestProcessor.process(requestParameters);
+
         Headers responseHeaders = httpExchange.getResponseHeaders();
 
         List<NameValuePair> headersList = responseBuilder.getHeaders();
@@ -40,9 +41,5 @@ public class DefaultHttpHandler implements HttpHandler {
         OutputStream os = httpExchange.getResponseBody();
         os.write(responseBody.getBytes());
         os.close();
-    }
-
-    public List<NameValuePair> getRequestParameters() {
-        return requestParameters;
     }
 }

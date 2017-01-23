@@ -2,7 +2,7 @@ package ro.payu.lib.ipn;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URLEncodedUtils;
-import ro.payu.lib.common.server.RequestProcessor;
+import ro.payu.lib.common.server.RequestParser;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -10,15 +10,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.util.List;
-import java.util.concurrent.Semaphore;
 
-public class IpnRequestProcessor implements RequestProcessor {
-
-    final private Semaphore semaphore;
-
-    public IpnRequestProcessor(Semaphore semaphore) {
-        this.semaphore = semaphore;
-    }
+public class IpnRequestParser implements RequestParser {
 
     public List<NameValuePair> getRequestParameters(final InputStream requestBody) {
 
@@ -30,10 +23,6 @@ public class IpnRequestProcessor implements RequestProcessor {
             throw new RuntimeException(e);
         }
 
-        List<NameValuePair> requestParameters = URLEncodedUtils.parse(urlEncodedString, Charset.defaultCharset());
-
-        semaphore.release();
-
-        return requestParameters;
+        return URLEncodedUtils.parse(urlEncodedString, Charset.defaultCharset());
     }
 }

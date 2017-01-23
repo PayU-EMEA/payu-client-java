@@ -7,6 +7,7 @@ import ro.payu.example.idn.IdnRequestParametersBuilder;
 import ro.payu.example.idn.IdnResponseInterpreter;
 import ro.payu.example.ipn.IpnHttpServerBuilder;
 import ro.payu.example.ipn.IpnRequestInterpreter;
+import ro.payu.example.ipn.IpnRequestProcessor;
 import ro.payu.lib.alu.AluAuthenticationService;
 import ro.payu.lib.alu.AluClient;
 import ro.payu.lib.alu.AluResponseParser;
@@ -41,9 +42,9 @@ public class ClientUsageExample {
     private static IdnResponseInterpreter idnResponseInterpreter;
 
     private static IpnRequestInterpreter ipnRequestInterpreter;
-
     private static DefaultHttpServer ipnHttpServer;
     private static Semaphore semaphore;
+    private static IpnRequestProcessor ipnRequestProcessor;
 
     public static void main(String[] args) {
 
@@ -66,30 +67,6 @@ public class ClientUsageExample {
         }
     }
 
-    private static void callIdn(List<NameValuePair> ipnRequestParameters) throws CommunicationException, InvalidXmlResponseParsingException, BadResponseSignatureException {
-
-        final List<NameValuePair> idnRequestParameters = idnRequestParametersBuilder.build(ipnRequestParameters);
-
-        final List<NameValuePair> idnResponseParameters = idnClient.call(idnRequestParameters);
-
-        idnResponseInterpreter.interpretResponseParameters(idnResponseParameters);
-        if (!idnResponseInterpreter.isSuccess(idnResponseParameters)) {
-            throw new RuntimeException("IDN response ERROR!");
-        }
-    }
-
-    private static List<NameValuePair> processIpnRequest() {
-
-        final List<NameValuePair> ipnRequestParameters = ipnHttpServer.getRequestParameters();
-
-        ipnRequestInterpreter.interpretResponseParameters(ipnRequestParameters);
-        if (!ipnRequestInterpreter.isSuccess(ipnRequestParameters)) {
-            throw new RuntimeException("IPN request ERROR!");
-        }
-
-        return ipnRequestParameters;
-    }
-
     private static void callAlu() throws CommunicationException, InvalidXmlResponseParsingException, BadResponseSignatureException {
 
         final List<NameValuePair> aluRequestParameters = aluRequestParametersBuilder.buildRequestParameters();
@@ -99,6 +76,30 @@ public class ClientUsageExample {
         aluResponseInterpreter.interpretResponseParameters(aluResponseParameters);
         if (!aluResponseInterpreter.isSuccess(aluResponseParameters)) {
             throw new RuntimeException("ALU response ERROR!");
+        }
+    }
+
+    private static List<NameValuePair> processIpnRequest() {
+
+        final List<NameValuePair> ipnRequestParameters = ipnRequestProcessor.getRequestParameters();
+
+        ipnRequestInterpreter.interpretRequestParameters(ipnRequestParameters);
+        if (!ipnRequestInterpreter.isSuccess(ipnRequestParameters)) {
+            throw new RuntimeException("IPN request ERROR!");
+        }
+
+        return ipnRequestParameters;
+    }
+
+    private static void callIdn(List<NameValuePair> ipnRequestParameters) throws CommunicationException, InvalidXmlResponseParsingException, BadResponseSignatureException {
+
+        final List<NameValuePair> idnRequestParameters = idnRequestParametersBuilder.build(ipnRequestParameters);
+
+        final List<NameValuePair> idnResponseParameters = idnClient.call(idnRequestParameters);
+
+        idnResponseInterpreter.interpretResponseParameters(idnResponseParameters);
+        if (!idnResponseInterpreter.isSuccess(idnResponseParameters)) {
+            throw new RuntimeException("IDN response ERROR!");
         }
     }
 
@@ -129,9 +130,9 @@ public class ClientUsageExample {
         idnResponseInterpreter = new IdnResponseInterpreter();
 
         ipnRequestInterpreter = new IpnRequestInterpreter();
-
         semaphore = new Semaphore(1);
-        ipnHttpServer = IpnHttpServerBuilder.createServer(semaphore);
+        ipnRequestProcessor = new IpnRequestProcessor(semaphore);
+        ipnHttpServer = IpnHttpServerBuilder.createServer(ipnRequestProcessor);
         ipnHttpServer.start();
     }
 

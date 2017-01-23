@@ -2,20 +2,15 @@ package ro.payu.lib.common.server;
 
 
 import com.sun.net.httpserver.HttpServer;
-import org.apache.http.NameValuePair;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.util.List;
 
 public class DefaultHttpServer {
 
     private HttpServer server;
-    private DefaultHttpHandler httpHandler;
 
     public DefaultHttpServer(String endpoint, int port, DefaultHttpHandler httpHandler) {
-
-        this.httpHandler = httpHandler;
 
         try {
             server = HttpServer.create(new InetSocketAddress(port), 0);
@@ -33,9 +28,5 @@ public class DefaultHttpServer {
 
     public void stop() {
         server.stop(1);
-    }
-
-    public List<NameValuePair> getRequestParameters() {
-        return httpHandler.getRequestParameters();
     }
 }

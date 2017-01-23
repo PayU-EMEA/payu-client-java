@@ -6,8 +6,8 @@ import java.util.List;
 
 public class IpnRequestInterpreter {
 
-    public boolean isSuccess(List<NameValuePair> response) {
-        for (NameValuePair pair : response) {
+    public boolean isSuccess(List<NameValuePair> requestParameters) {
+        for (NameValuePair pair : requestParameters) {
             if (pair.getName().equals("ORDERSTATUS") && pair.getValue().equals("PAYMENT_AUTHORIZED")) {
                 return true;
             }
@@ -15,9 +15,9 @@ public class IpnRequestInterpreter {
         return false;
     }
 
-    public void interpretResponseParameters(List<NameValuePair> response) {
+    public void interpretRequestParameters(List<NameValuePair> requestParameters) {
         System.out.println();
         System.out.println("IPN incoming request:");
-        System.out.println(response);
+        System.out.println(requestParameters);
     }
 }
