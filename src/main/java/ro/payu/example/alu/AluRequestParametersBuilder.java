@@ -10,11 +10,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
-public class AluRequestParameterBuilder {
+public class AluRequestParametersBuilder {
 
     private String merchantCode;
 
-    public AluRequestParameterBuilder(String merchantCode) {
+    public AluRequestParametersBuilder(String merchantCode) {
         this.merchantCode = merchantCode;
 
     }

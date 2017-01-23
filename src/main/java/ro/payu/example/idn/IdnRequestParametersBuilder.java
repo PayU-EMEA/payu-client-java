@@ -9,12 +9,11 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
-public class IdnRequestParameterBuilder {
-
+public class IdnRequestParametersBuilder {
 
     private final String merchantCode;
 
-    public IdnRequestParameterBuilder(String merchantCode) {
+    public IdnRequestParametersBuilder(String merchantCode) {
 
         this.merchantCode = merchantCode;
     }
