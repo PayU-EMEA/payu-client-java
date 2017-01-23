@@ -5,6 +5,7 @@ import ro.payu.example.alu.AluRequestParametersBuilder;
 import ro.payu.example.alu.AluResponseInterpreter;
 import ro.payu.example.idn.IdnRequestParametersBuilder;
 import ro.payu.example.idn.IdnResponseInterpreter;
+import ro.payu.example.ipn.IpnHttpServerBuilder;
 import ro.payu.example.ipn.IpnRequestInterpreter;
 import ro.payu.lib.alu.AluAuthenticationService;
 import ro.payu.lib.alu.AluClient;
@@ -17,7 +18,6 @@ import ro.payu.lib.common.server.DefaultHttpServer;
 import ro.payu.lib.idn.IdnAuthenticationService;
 import ro.payu.lib.idn.IdnClient;
 import ro.payu.lib.idn.IdnResponseParser;
-import ro.payu.lib.ipn.IpnHttpServerBuilder;
 
 import java.util.List;
 import java.util.concurrent.Semaphore;
