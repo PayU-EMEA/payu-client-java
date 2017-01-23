@@ -10,6 +10,12 @@ import ro.payu.lib.common.server.ResponseBuilder;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,6 +49,14 @@ public class IpnResponseBuilder implements ResponseBuilder {
         Text textElement = document.createTextNode("DATE|HASH");
         rootElement.appendChild(textElement);
 
-        return document.toString();
+        StringWriter stringWriter = new StringWriter();
+        try {
+            Transformer transformer = TransformerFactory.newInstance().newTransformer();
+            transformer.transform(new DOMSource(document), new StreamResult(stringWriter));
+        } catch (TransformerException e) {
+            throw new RuntimeException(e);
+        }
+
+        return stringWriter.toString();
     }
 }
