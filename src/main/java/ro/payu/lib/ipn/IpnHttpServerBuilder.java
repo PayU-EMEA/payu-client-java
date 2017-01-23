@@ -1,7 +1,7 @@
-package ro.payu.example.ipn;
+package ro.payu.lib.ipn;
 
-import ro.payu.example.ipn.server.DefaultHttpHandler;
-import ro.payu.example.ipn.server.DefaultHttpServer;
+import ro.payu.lib.common.server.DefaultHttpHandler;
+import ro.payu.lib.common.server.DefaultHttpServer;
 
 import java.util.concurrent.Semaphore;
 

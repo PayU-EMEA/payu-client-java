@@ -1,4 +1,4 @@
-package ro.payu.example.ipn.server;
+package ro.payu.lib.common.server;
 
 import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;

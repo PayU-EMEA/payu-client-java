@@ -1,8 +1,8 @@
-package ro.payu.example.ipn;
+package ro.payu.lib.ipn;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URLEncodedUtils;
-import ro.payu.example.ipn.server.RequestProcessor;
+import ro.payu.lib.common.server.RequestProcessor;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -12,11 +12,11 @@ import java.nio.charset.Charset;
 import java.util.List;
 import java.util.concurrent.Semaphore;
 
-class IpnRequestProcessor implements RequestProcessor {
+public class IpnRequestProcessor implements RequestProcessor {
 
     final private Semaphore semaphore;
 
-    IpnRequestProcessor(Semaphore semaphore) {
+    public IpnRequestProcessor(Semaphore semaphore) {
         this.semaphore = semaphore;
     }
 

@@ -1,11 +1,11 @@
-package ro.payu.example.ipn;
+package ro.payu.lib.ipn;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Text;
-import ro.payu.example.ipn.server.ResponseBuilder;
+import ro.payu.lib.common.server.ResponseBuilder;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;

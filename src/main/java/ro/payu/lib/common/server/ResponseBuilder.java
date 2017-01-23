@@ -1,4 +1,4 @@
-package ro.payu.example.ipn.server;
+package ro.payu.lib.common.server;
 
 import org.apache.http.NameValuePair;
 
