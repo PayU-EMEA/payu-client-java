@@ -4,7 +4,7 @@ import org.apache.http.NameValuePair;
 
 import java.util.List;
 
-public class AluResposeParametersInterpreter {
+public class AluResponseParametersInterpreter {
 
     public void interpretResponseParameters(List<NameValuePair> response) {
         System.out.println("ALU response:");

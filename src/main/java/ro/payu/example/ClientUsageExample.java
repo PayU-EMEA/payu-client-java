@@ -2,7 +2,7 @@ package ro.payu.example;
 
 import org.apache.http.NameValuePair;
 import ro.payu.example.alu.AluRequestParametersBuilder;
-import ro.payu.example.alu.AluResposeParametersInterpreter;
+import ro.payu.example.alu.AluResponseParametersInterpreter;
 import ro.payu.example.idn.IdnRequestParametersBuilder;
 import ro.payu.example.idn.IdnResponseParametersInterpreter;
 import ro.payu.example.ipn.IpnHttpServer;
@@ -51,7 +51,7 @@ public class ClientUsageExample {
         ));
 
         final AluRequestParametersBuilder aluRequestParametersBuilder = new AluRequestParametersBuilder(MERCHANT_CODE);
-        final AluResposeParametersInterpreter aluResposeParametersInterpreter = new AluResposeParametersInterpreter();
+        final AluResponseParametersInterpreter aluResponseParametersInterpreter = new AluResponseParametersInterpreter();
 
         final IdnRequestParametersBuilder idnRequestParametersBuilder = new IdnRequestParametersBuilder(MERCHANT_CODE);
         final IdnResponseParametersInterpreter idnResponseParametersInterpreter = new IdnResponseParametersInterpreter();
@@ -65,7 +65,7 @@ public class ClientUsageExample {
 
             semaphore.acquire();
             final List<NameValuePair> aluResponseParameters = aluClient.call(aluRequestParameters);
-            aluResposeParametersInterpreter.interpretResponseParameters(aluResponseParameters);
+            aluResponseParametersInterpreter.interpretResponseParameters(aluResponseParameters);
 
             semaphore.acquire();
             System.out.println("IPN incoming request:\n" + ipnHttpServer.getIpnRequestParameters());
