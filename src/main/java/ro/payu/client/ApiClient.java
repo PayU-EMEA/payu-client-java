@@ -11,6 +11,7 @@ import java.util.List;
 
 public class ApiClient {
 
+    public static final String ALU_ENDPOINT = "/order/alu/v3";
     public static final String IDN_ENDPOINT = "/order/idn.php";
 
     final private ApiAuthenticationService apiAuthenticationService;
@@ -30,7 +31,7 @@ public class ApiClient {
         final List<NameValuePair> requestParams = apiAuthenticationService.addAluRequestSignature(parameters);
 
         // create request
-        final HttpPost httpRequest = new HttpPost("/order/alu/v3");
+        final HttpPost httpRequest = new HttpPost(ALU_ENDPOINT);
         httpRequest.setEntity(new UrlEncodedFormEntity(requestParams, StandardCharsets.UTF_8));
 
         // call http and obtain response

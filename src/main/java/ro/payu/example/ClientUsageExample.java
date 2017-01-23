@@ -26,7 +26,6 @@ public class ClientUsageExample {
 
     public static void main(String[] args) {
 
-
         final ApiClient apiClient = new ApiClient(
                 new ApiAuthenticationService(
                         MERCHANT_SECRET_KEY,
@@ -54,7 +53,7 @@ public class ClientUsageExample {
             aluResposeParameterInterpretor.interpretResponseParameters(aluResponseParameters);
 
             semaphore.acquire();
-            System.out.println(ipnHttpServer.getIpnRequestParameters());
+            System.out.println("IPN incoming request:\n" + ipnHttpServer.getIpnRequestParameters());
 
             final List<NameValuePair> idnRequestParameters = idnRequestParameterBuilder.build(aluResponseParameters);
             final List<NameValuePair> idnResponseParameters = apiClient.callIDN(idnRequestParameters);
