@@ -12,9 +12,8 @@ import ro.payu.lib.alu.AluClient;
 import ro.payu.lib.alu.AluResponseParser;
 import ro.payu.lib.common.authentication.ApiCommonAuthenticationService;
 import ro.payu.lib.common.authentication.AuthenticationService;
-import ro.payu.lib.common.client.ApiClient;
-import ro.payu.lib.common.client.ApiHttpClient;
-import ro.payu.lib.common.client.XmlResponseParser;
+import ro.payu.lib.common.authentication.BadResponseSignatureException;
+import ro.payu.lib.common.client.*;
 import ro.payu.lib.idn.IdnAuthenticationService;
 import ro.payu.lib.idn.IdnClient;
 import ro.payu.lib.idn.IdnResponseParser;
@@ -31,64 +30,32 @@ public class ClientUsageExample {
     private static final String MERCHANT_CODE = "PAYU_2";
     private static final String MERCHANT_SECRET_KEY = "SECRET_KEY";
 
+    private static AluClient aluClient;
+    private static IdnClient idnClient;
+
+    private static AluRequestParametersBuilder aluRequestParametersBuilder;
+    private static AluResponseInterpreter aluResponseInterpreter;
+
+    private static IdnRequestParametersBuilder idnRequestParametersBuilder;
+    private static IdnResponseInterpreter idnResponseInterpreter;
+
+    private static IpnRequestInterpreter ipnRequestInterpreter;
+
+    private static IpnHttpServer ipnHttpServer;
+    private static Semaphore semaphore;
+
     public static void main(String[] args) {
 
-        final ApiHttpClient apiHttpClient = new ApiHttpClient(SERVER_HOST, SERVER_PORT, SERVER_SCHEMA);
-        final ApiCommonAuthenticationService apiCommonAuthenticationService = new ApiCommonAuthenticationService(
-                new AuthenticationService(),
-                MERCHANT_SECRET_KEY
-        );
-        final XmlResponseParser xmlResponseParser = new XmlResponseParser();
-        final AluClient aluClient = new AluClient(new ApiClient(
-                apiHttpClient,
-                new AluAuthenticationService(apiCommonAuthenticationService),
-                new AluResponseParser(xmlResponseParser)
-        ));
-
-        final IdnClient idnClient = new IdnClient(new ApiClient(
-                apiHttpClient,
-                new IdnAuthenticationService(apiCommonAuthenticationService),
-                new IdnResponseParser(xmlResponseParser)
-        ));
-
-        final AluRequestParametersBuilder aluRequestParametersBuilder = new AluRequestParametersBuilder(MERCHANT_CODE);
-        final AluResponseInterpreter aluResponseInterpreter = new AluResponseInterpreter();
-
-        final IdnRequestParametersBuilder idnRequestParametersBuilder = new IdnRequestParametersBuilder(MERCHANT_CODE);
-        final IdnResponseInterpreter idnResponseInterpreter = new IdnResponseInterpreter();
-
-        final IpnRequestInterpreter ipnRequestInterpreter = new IpnRequestInterpreter();
-
-        Semaphore semaphore = new Semaphore(1);
-        IpnHttpServer ipnHttpServer = new IpnHttpServer(semaphore);
-        ipnHttpServer.start();
+        setUp();
 
         try {
-            final List<NameValuePair> aluRequestParameters = aluRequestParametersBuilder.buildRequestParameters();
+            semaphore.acquire();
+            callAlu();
 
             semaphore.acquire();
-            final List<NameValuePair> aluResponseParameters = aluClient.call(aluRequestParameters);
+            final List<NameValuePair> ipnRequestParameters = processIpnRequest();
 
-            aluResponseInterpreter.interpretResponseParameters(aluResponseParameters);
-            if (!aluResponseInterpreter.isSuccess(aluResponseParameters)) {
-                throw new RuntimeException("ALU response ERROR!");
-            }
-
-            semaphore.acquire();
-            final List<NameValuePair> ipnRequestParameters = ipnHttpServer.getIpnRequestParameters();
-            ipnRequestInterpreter.interpretResponseParameters(ipnRequestParameters);
-            if (!ipnRequestInterpreter.isSuccess(ipnRequestParameters)) {
-                throw new RuntimeException("IPN request ERROR!");
-            }
-
-            final List<NameValuePair> idnRequestParameters = idnRequestParametersBuilder.build(aluResponseParameters);
-
-            final List<NameValuePair> idnResponseParameters = idnClient.call(idnRequestParameters);
-
-            idnResponseInterpreter.interpretResponseParameters(idnResponseParameters);
-            if (!idnResponseInterpreter.isSuccess(idnResponseParameters)) {
-                throw new RuntimeException("IDN response ERROR!");
-            }
+            callIdn(ipnRequestParameters);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -96,6 +63,75 @@ public class ClientUsageExample {
         } finally {
             ipnHttpServer.stop();
         }
+    }
+
+    private static void callIdn(List<NameValuePair> ipnRequestParameters) throws CommunicationException, InvalidXmlResponseParsingException, BadResponseSignatureException {
+
+        final List<NameValuePair> idnRequestParameters = idnRequestParametersBuilder.build(ipnRequestParameters);
+
+        final List<NameValuePair> idnResponseParameters = idnClient.call(idnRequestParameters);
+
+        idnResponseInterpreter.interpretResponseParameters(idnResponseParameters);
+        if (!idnResponseInterpreter.isSuccess(idnResponseParameters)) {
+            throw new RuntimeException("IDN response ERROR!");
+        }
+    }
+
+    private static List<NameValuePair> processIpnRequest() {
+
+        final List<NameValuePair> ipnRequestParameters = ipnHttpServer.getIpnRequestParameters();
+
+        ipnRequestInterpreter.interpretResponseParameters(ipnRequestParameters);
+        if (!ipnRequestInterpreter.isSuccess(ipnRequestParameters)) {
+            throw new RuntimeException("IPN request ERROR!");
+        }
+
+        return ipnRequestParameters;
+    }
+
+    private static void callAlu() throws CommunicationException, InvalidXmlResponseParsingException, BadResponseSignatureException {
+
+        final List<NameValuePair> aluRequestParameters = aluRequestParametersBuilder.buildRequestParameters();
+
+        final List<NameValuePair> aluResponseParameters = aluClient.call(aluRequestParameters);
+
+        aluResponseInterpreter.interpretResponseParameters(aluResponseParameters);
+        if (!aluResponseInterpreter.isSuccess(aluResponseParameters)) {
+            throw new RuntimeException("ALU response ERROR!");
+        }
+    }
+
+    private static void setUp() {
+
+        final ApiHttpClient apiHttpClient = new ApiHttpClient(SERVER_HOST, SERVER_PORT, SERVER_SCHEMA);
+        final ApiCommonAuthenticationService apiCommonAuthenticationService = new ApiCommonAuthenticationService(
+                new AuthenticationService(),
+                MERCHANT_SECRET_KEY
+        );
+        final XmlResponseParser xmlResponseParser = new XmlResponseParser();
+        aluClient = new AluClient(new ApiClient(
+                apiHttpClient,
+                new AluAuthenticationService(apiCommonAuthenticationService),
+                new AluResponseParser(xmlResponseParser)
+        ));
+
+        idnClient = new IdnClient(new ApiClient(
+                apiHttpClient,
+                new IdnAuthenticationService(apiCommonAuthenticationService),
+                new IdnResponseParser(xmlResponseParser)
+        ));
+
+        aluRequestParametersBuilder = new AluRequestParametersBuilder(MERCHANT_CODE);
+        aluResponseInterpreter = new AluResponseInterpreter();
+
+        idnRequestParametersBuilder = new IdnRequestParametersBuilder(MERCHANT_CODE);
+        idnResponseInterpreter = new IdnResponseInterpreter();
+
+        ipnRequestInterpreter = new IpnRequestInterpreter();
+
+        semaphore = new Semaphore(1);
+        ipnHttpServer = new IpnHttpServer(semaphore);
+        ipnHttpServer.start();
     }
 
 }
