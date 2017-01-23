@@ -13,8 +13,8 @@ import java.util.concurrent.Semaphore;
 
 public class IpnHttpHandler implements HttpHandler {
 
-    private List<NameValuePair> requestParameters;
     private final Semaphore semaphore;
+    private List<NameValuePair> requestParameters;
 
     public IpnHttpHandler(Semaphore semaphore) {
         this.semaphore = semaphore;
