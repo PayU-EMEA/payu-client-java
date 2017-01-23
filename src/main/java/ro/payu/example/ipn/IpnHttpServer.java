@@ -38,6 +38,11 @@ public class IpnHttpServer {
         }
     }
 
+    public static void main(String[] args) {
+        IpnHttpServer server = new IpnHttpServer();
+        server.start();
+    }
+
     public void start() {
         server.start();
     }
@@ -48,10 +53,5 @@ public class IpnHttpServer {
 
     public List<NameValuePair> getIpnRequestParameters() {
         return ipnHttpHandler.getRequestParameters();
-    }
-
-    public static void main(String[] args) {
-        IpnHttpServer server = new IpnHttpServer();
-        server.start();
     }
 }

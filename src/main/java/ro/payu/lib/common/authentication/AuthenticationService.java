@@ -1,5 +1,9 @@
-package ro.payu.authentication;
+package ro.payu.lib.common.authentication;
 
+import org.apache.http.NameValuePair;
+
+import javax.crypto.Mac;
+import javax.crypto.spec.SecretKeySpec;
 import java.nio.charset.StandardCharsets;
 import java.security.InvalidKeyException;
 import java.security.NoSuchAlgorithmException;
@@ -7,11 +11,6 @@ import java.util.Comparator;
 import java.util.Formatter;
 import java.util.List;
 import java.util.stream.Collectors;
-
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
-
-import org.apache.http.NameValuePair;
 
 public final class AuthenticationService {
 
@@ -47,5 +46,4 @@ public final class AuthenticationService {
 
         return formatter.toString();
     }
-
 }

@@ -1,4 +1,4 @@
-package ro.payu.client;
+package ro.payu.lib.common.client;
 
 import org.apache.http.HttpException;
 import org.apache.http.HttpHost;
