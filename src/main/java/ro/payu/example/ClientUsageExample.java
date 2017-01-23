@@ -2,10 +2,11 @@ package ro.payu.example;
 
 import org.apache.http.NameValuePair;
 import ro.payu.example.alu.AluRequestParametersBuilder;
-import ro.payu.example.alu.AluResponseParametersInterpreter;
+import ro.payu.example.alu.AluResponseInterpreter;
 import ro.payu.example.idn.IdnRequestParametersBuilder;
-import ro.payu.example.idn.IdnResponseParametersInterpreter;
+import ro.payu.example.idn.IdnResponseInterpreter;
 import ro.payu.example.ipn.IpnHttpServer;
+import ro.payu.example.ipn.IpnRequestInterpreter;
 import ro.payu.lib.alu.AluAuthenticationService;
 import ro.payu.lib.alu.AluClient;
 import ro.payu.lib.alu.AluResponseParser;
@@ -51,10 +52,12 @@ public class ClientUsageExample {
         ));
 
         final AluRequestParametersBuilder aluRequestParametersBuilder = new AluRequestParametersBuilder(MERCHANT_CODE);
-        final AluResponseParametersInterpreter aluResponseParametersInterpreter = new AluResponseParametersInterpreter();
+        final AluResponseInterpreter aluResponseInterpreter = new AluResponseInterpreter();
 
         final IdnRequestParametersBuilder idnRequestParametersBuilder = new IdnRequestParametersBuilder(MERCHANT_CODE);
-        final IdnResponseParametersInterpreter idnResponseParametersInterpreter = new IdnResponseParametersInterpreter();
+        final IdnResponseInterpreter idnResponseInterpreter = new IdnResponseInterpreter();
+
+        final IpnRequestInterpreter ipnRequestInterpreter = new IpnRequestInterpreter();
 
         Semaphore semaphore = new Semaphore(1);
         IpnHttpServer ipnHttpServer = new IpnHttpServer(semaphore);
@@ -65,21 +68,34 @@ public class ClientUsageExample {
 
             semaphore.acquire();
             final List<NameValuePair> aluResponseParameters = aluClient.call(aluRequestParameters);
-            aluResponseParametersInterpreter.interpretResponseParameters(aluResponseParameters);
+
+            aluResponseInterpreter.interpretResponseParameters(aluResponseParameters);
+            if (!aluResponseInterpreter.isSuccess(aluResponseParameters)) {
+                throw new RuntimeException("ALU response ERROR!");
+            }
 
             semaphore.acquire();
-            System.out.println("IPN incoming request:\n" + ipnHttpServer.getIpnRequestParameters());
+            final List<NameValuePair> ipnRequestParameters = ipnHttpServer.getIpnRequestParameters();
+            ipnRequestInterpreter.interpretResponseParameters(ipnRequestParameters);
+            if (!ipnRequestInterpreter.isSuccess(ipnRequestParameters)) {
+                throw new RuntimeException("IPN request ERROR!");
+            }
 
             final List<NameValuePair> idnRequestParameters = idnRequestParametersBuilder.build(aluResponseParameters);
+
             final List<NameValuePair> idnResponseParameters = idnClient.call(idnRequestParameters);
-            idnResponseParametersInterpreter.interpretResponseParameters(idnResponseParameters);
-            semaphore.release();
+
+            idnResponseInterpreter.interpretResponseParameters(idnResponseParameters);
+            if (!idnResponseInterpreter.isSuccess(idnResponseParameters)) {
+                throw new RuntimeException("IDN response ERROR!");
+            }
 
         } catch (Exception e) {
             e.printStackTrace();
-        }
 
-        ipnHttpServer.stop();
+        } finally {
+            ipnHttpServer.stop();
+        }
     }
 
 }

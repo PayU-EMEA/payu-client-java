@@ -11,8 +11,8 @@ import java.util.concurrent.Semaphore;
 
 public class IpnHttpServer {
 
-    public static final int SERVER_PORT = 8000;
-    public static final String IPN_ENDPOINT = "/ipn";
+    private static final int SERVER_PORT = 8000;
+    private static final String IPN_ENDPOINT = "/ipn";
 
     private HttpServer server;
     private IpnHttpHandler ipnHttpHandler;
@@ -38,11 +38,6 @@ public class IpnHttpServer {
         }
     }
 
-    public static void main(String[] args) {
-        IpnHttpServer server = new IpnHttpServer();
-        server.start();
-    }
-
     public void start() {
         server.start();
     }
@@ -53,5 +48,10 @@ public class IpnHttpServer {
 
     public List<NameValuePair> getIpnRequestParameters() {
         return ipnHttpHandler.getRequestParameters();
+    }
+
+    public static void main(String[] args) {
+        IpnHttpServer server = new IpnHttpServer();
+        server.start();
     }
 }

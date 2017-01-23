@@ -11,12 +11,12 @@ import java.nio.charset.Charset;
 import java.util.List;
 import java.util.concurrent.Semaphore;
 
-public class IpnHttpHandler implements HttpHandler {
+class IpnHttpHandler implements HttpHandler {
 
     private final Semaphore semaphore;
     private List<NameValuePair> requestParameters;
 
-    public IpnHttpHandler(Semaphore semaphore) {
+    IpnHttpHandler(Semaphore semaphore) {
         this.semaphore = semaphore;
     }
 
