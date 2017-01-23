@@ -5,8 +5,9 @@ import ro.payu.example.alu.AluRequestParametersBuilder;
 import ro.payu.example.alu.AluResponseInterpreter;
 import ro.payu.example.idn.IdnRequestParametersBuilder;
 import ro.payu.example.idn.IdnResponseInterpreter;
-import ro.payu.example.ipn.IpnHttpServer;
+import ro.payu.example.ipn.IpnHttpServerBuilder;
 import ro.payu.example.ipn.IpnRequestInterpreter;
+import ro.payu.example.ipn.server.DefaultHttpServer;
 import ro.payu.lib.alu.AluAuthenticationService;
 import ro.payu.lib.alu.AluClient;
 import ro.payu.lib.alu.AluResponseParser;
@@ -41,7 +42,7 @@ public class ClientUsageExample {
 
     private static IpnRequestInterpreter ipnRequestInterpreter;
 
-    private static IpnHttpServer ipnHttpServer;
+    private static DefaultHttpServer ipnHttpServer;
     private static Semaphore semaphore;
 
     public static void main(String[] args) {
@@ -79,7 +80,7 @@ public class ClientUsageExample {
 
     private static List<NameValuePair> processIpnRequest() {
 
-        final List<NameValuePair> ipnRequestParameters = ipnHttpServer.getIpnRequestParameters();
+        final List<NameValuePair> ipnRequestParameters = ipnHttpServer.getRequestParameters();
 
         ipnRequestInterpreter.interpretResponseParameters(ipnRequestParameters);
         if (!ipnRequestInterpreter.isSuccess(ipnRequestParameters)) {
@@ -130,7 +131,7 @@ public class ClientUsageExample {
         ipnRequestInterpreter = new IpnRequestInterpreter();
 
         semaphore = new Semaphore(1);
-        ipnHttpServer = new IpnHttpServer(semaphore);
+        ipnHttpServer = IpnHttpServerBuilder.createServer(semaphore);
         ipnHttpServer.start();
     }
 
