@@ -1,60 +1,57 @@
 package ro.payu.example.ipn;
 
 
-import com.sun.net.httpserver.Headers;
-import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 import org.apache.http.NameValuePair;
-import org.apache.http.client.utils.URLEncodedUtils;
 
-import java.io.*;
+import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.nio.charset.Charset;
 import java.util.List;
+import java.util.concurrent.Semaphore;
 
 public class IpnHttpServer {
 
     public static final int SERVER_PORT = 8000;
+    public static final String IPN_ENDPOINT = "/ipn";
 
-    public static void main(String[] args) {
+    private HttpServer server;
+    private IpnHttpHandler ipnHttpHandler;
 
+    public IpnHttpServer() {
+        this(IPN_ENDPOINT, SERVER_PORT, new Semaphore(1));
+    }
+
+    public IpnHttpServer(Semaphore semaphore) {
+        this(IPN_ENDPOINT, SERVER_PORT, semaphore);
+    }
+
+    public IpnHttpServer(String endpoint, int port, Semaphore semaphore) {
         try {
-            HttpServer server = HttpServer.create(new InetSocketAddress(SERVER_PORT), 0);
+            server = HttpServer.create(new InetSocketAddress(port), 0);
 
-            server.createContext("/ipn", new IpnHttpHandler());
+            ipnHttpHandler = new IpnHttpHandler(semaphore);
+            server.createContext(endpoint, ipnHttpHandler);
             server.setExecutor(null); // creates a default executor (taken from oracle doc example)
-            server.start();
 
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    private static class IpnHttpHandler implements HttpHandler {
+    public void start() {
+        server.start();
+    }
 
-        @Override
-        public void handle(HttpExchange httpExchange) throws IOException {
+    public void stop() {
+        server.stop(1);
+    }
 
-            // parse request
-            InputStream requestBody = httpExchange.getRequestBody();
-            BufferedReader br = new BufferedReader(new InputStreamReader(requestBody, "utf-8"));
-            String urlEncodedString = br.readLine();
-            List<NameValuePair> requestParameters = URLEncodedUtils.parse(urlEncodedString, Charset.defaultCharset());
+    public List<NameValuePair> getIpnRequestParameters() {
+        return ipnHttpHandler.getRequestParameters();
+    }
 
-            System.out.println(requestParameters);
-
-            // send response
-            Headers h = httpExchange.getResponseHeaders();
-            h.add("Content-Type", "text/xml");
-
-            StringBuilder response = new StringBuilder("This is the response");
-            response.append(requestParameters.toString());
-
-            httpExchange.sendResponseHeaders(200, response.length());
-            OutputStream os = httpExchange.getResponseBody();
-            os.write(response.toString().getBytes());
-            os.close();
-        }
+    public static void main(String[] args) {
+        IpnHttpServer server = new IpnHttpServer();
+        server.start();
     }
 }

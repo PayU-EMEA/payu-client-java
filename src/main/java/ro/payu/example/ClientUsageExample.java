@@ -10,8 +10,10 @@ import ro.payu.example.alu.AluRequestParameterBuilder;
 import ro.payu.example.alu.AluResposeParameterInterpretor;
 import ro.payu.example.idn.IdnRequestParameterBuilder;
 import ro.payu.example.idn.IdnResposeParameterInterpreter;
+import ro.payu.example.ipn.IpnHttpServer;
 
 import java.util.List;
+import java.util.concurrent.Semaphore;
 
 public class ClientUsageExample {
 
@@ -40,19 +42,30 @@ public class ClientUsageExample {
         final IdnRequestParameterBuilder idnRequestParameterBuilder = new IdnRequestParameterBuilder(MERCHANT_CODE);
         final IdnResposeParameterInterpreter idnResposeParameterInterpreter = new IdnResposeParameterInterpreter();
 
+        Semaphore semaphore = new Semaphore(1);
+        IpnHttpServer ipnHttpServer = new IpnHttpServer(semaphore);
+        ipnHttpServer.start();
+
         try {
             final List<NameValuePair> aluRequestParameters = aluRequestParameterBuilder.buildRequestParameters();
+
+            semaphore.acquire();
             final List<NameValuePair> aluResponseParameters = apiClient.callALU(aluRequestParameters);
             aluResposeParameterInterpretor.interpretResponseParameters(aluResponseParameters);
+
+            semaphore.acquire();
+            System.out.println(ipnHttpServer.getIpnRequestParameters());
 
             final List<NameValuePair> idnRequestParameters = idnRequestParameterBuilder.build(aluResponseParameters);
             final List<NameValuePair> idnResponseParameters = apiClient.callIDN(idnRequestParameters);
             idnResposeParameterInterpreter.interpretResponseParameters(idnResponseParameters);
+            semaphore.release();
 
         } catch (Exception e) {
             e.printStackTrace();
         }
 
+        ipnHttpServer.stop();
     }
 
 }
