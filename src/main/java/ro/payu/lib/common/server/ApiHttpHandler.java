@@ -48,7 +48,11 @@ public class ApiHttpHandler implements HttpRequestHandler {
             return;
         }
 
-        requestProcessor.process(requestParameters);
+        boolean processed = requestProcessor.process(requestParameters);
+        if (!processed) {
+            response.setStatusCode(400);
+            return;
+        }
 
         List<NameValuePair> headersList = responseBuilder.getHeaders();
         for (NameValuePair header : headersList) {

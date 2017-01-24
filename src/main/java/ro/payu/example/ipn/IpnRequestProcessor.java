@@ -8,18 +8,20 @@ import java.util.concurrent.Semaphore;
 
 public class IpnRequestProcessor implements RequestProcessor {
 
+    public static final String DUMMY_BAD_REFNO = "dummy-123qwe-badRefNo";
     final private Semaphore semaphore;
+    private String expectedRefNo;
 
     private List<NameValuePair> requestParameters;
     private boolean isError;
 
     public IpnRequestProcessor() {
         semaphore = new Semaphore(1);
-        waitForIpn();
+        waitForIpn(DUMMY_BAD_REFNO);
     }
 
     @Override
-    public void process(List<NameValuePair> requestParameters) {
+    public boolean process(List<NameValuePair> requestParameters) {
         this.requestParameters = requestParameters;
         isError = false;
 
@@ -27,7 +29,18 @@ public class IpnRequestProcessor implements RequestProcessor {
         System.out.println("IPN incoming request:");
         System.out.println(requestParameters);
 
+        for (NameValuePair parameter : requestParameters) {
+            if (parameter.getName().equals("REFNO")) {
+                String refNo = parameter.getValue();
+                if (!expectedRefNo.equals(refNo)) {
+                    System.out.println("IPN ERROR (ignored): bad RefNo = " + refNo + ". Expecting = " + expectedRefNo);
+                    return false;
+                }
+            }
+        }
+        expectedRefNo = DUMMY_BAD_REFNO;
         semaphore.release();
+        return true;
     }
 
     @Override
@@ -41,12 +54,11 @@ public class IpnRequestProcessor implements RequestProcessor {
         }
 
         System.out.println();
-        System.out.println("IPN ERROR: " + error);
-
-        semaphore.release();
+        System.out.println("IPN ERROR (ignored): " + error);
     }
 
-    public void waitForIpn() {
+    public void waitForIpn(String refNo) {
+        expectedRefNo = refNo;
         semaphore.acquireUninterruptibly();
     }
 

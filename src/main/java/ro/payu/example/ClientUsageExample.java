@@ -74,16 +74,18 @@ public class ClientUsageExample {
         setUp();
 
         try {
+
             callAlu();
-            waitForIpn();
+            final List<NameValuePair> aluResponseParameters = getAluResponseParameters();
+            waitForIpn(aluResponseParameters);
 
             final List<NameValuePair> ipnRequestParameters = getIpnRequestParameters();
 
             callIdn(ipnRequestParameters);
-            waitForIpn();
+            waitForIpn(aluResponseParameters);
 
             callIrn(ipnRequestParameters);
-            waitForIpn();
+            waitForIpn(aluResponseParameters);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -104,6 +106,10 @@ public class ClientUsageExample {
         }
     }
 
+    private static List<NameValuePair> getAluResponseParameters() {
+        return aluResponseInterpreter.getResponseParameters();
+    }
+
     private static List<NameValuePair> getIpnRequestParameters() {
 
         if (ipnRequestProcessor.getRequestParameters() == null || !ipnRequestProcessor.isSuccess()) {
@@ -113,8 +119,15 @@ public class ClientUsageExample {
         return ipnRequestProcessor.getRequestParameters();
     }
 
-    private static void waitForIpn() {
-        ipnRequestProcessor.waitForIpn();
+    private static void waitForIpn(List<NameValuePair> aluResponseParameters) {
+        String refNo = "";
+        for (NameValuePair parameter: aluResponseParameters) {
+            if (parameter.getName().equals("REFNO")) {
+                refNo = parameter.getValue();
+            }
+        }
+
+        ipnRequestProcessor.waitForIpn(refNo);
     }
 
     private static void callIdn(List<NameValuePair> ipnRequestParameters) throws CommunicationException, InvalidXmlResponseParsingException, InvalidSignatureException {
