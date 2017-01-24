@@ -32,7 +32,7 @@ public class AluRequestParametersBuilder {
         parameters.add(new BasicNameValuePair("BACK_REF", "http://dev.indispus.ro/emag/return.php"));
         parameters.add(new BasicNameValuePair("ORDER_TIMEOUT", "3000"));
 
-        parameters.add(new BasicNameValuePair("PRICES_CURRENCY", "RON"));
+        parameters.add(new BasicNameValuePair("PRICES_CURRENCY", "TRY"));
 
         parameters.add(new BasicNameValuePair("DISCOUNT", "0"));
         parameters.add(new BasicNameValuePair("ORDER_SHIPPING", "0"));
@@ -47,15 +47,15 @@ public class AluRequestParametersBuilder {
 
         parameters.add(new BasicNameValuePair("PAY_METHOD", "CCVISAMC"));
 
-        parameters.add(new BasicNameValuePair("CC_CVV", "123"));
-        parameters.add(new BasicNameValuePair("CC_NUMBER", "4111111111111111"));
+        parameters.add(new BasicNameValuePair("CC_CVV", "000"));
+        parameters.add(new BasicNameValuePair("CC_NUMBER", "4355084355084358"));
         parameters.add(new BasicNameValuePair("CC_NUMBER_TIME", "10.34"));
         parameters.add(new BasicNameValuePair("CC_OWNER", "Andrei Susanu"));
         parameters.add(new BasicNameValuePair("CC_OWNER_TIME", "9.72"));
         parameters.add(new BasicNameValuePair("CC_TYPE", "VISA"));
         parameters.add(new BasicNameValuePair("CLIENT_IP", "91.220.167.100"));
-        parameters.add(new BasicNameValuePair("EXP_MONTH", "11"));
-        parameters.add(new BasicNameValuePair("EXP_YEAR", "2019"));
+        parameters.add(new BasicNameValuePair("EXP_MONTH", "12"));
+        parameters.add(new BasicNameValuePair("EXP_YEAR", "2018"));
 
 
         parameters.add(new BasicNameValuePair("BILL_ADDRESS", "Acasă"));
