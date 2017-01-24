@@ -44,7 +44,6 @@ public class IdnRequestParametersBuilder {
         idnRequestParameters.add(new BasicNameValuePair("ORDER_AMOUNT", amount));
         idnRequestParameters.add(new BasicNameValuePair("ORDER_CURRENCY", currency));
         idnRequestParameters.add(new BasicNameValuePair("IDN_DATE", idnDate));
-        idnRequestParameters.add(new BasicNameValuePair("CHARGE_AMOUNT", amount));
         return idnRequestParameters;
     }
 }

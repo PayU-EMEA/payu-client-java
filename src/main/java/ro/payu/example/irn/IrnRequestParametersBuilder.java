@@ -44,7 +44,6 @@ public class IrnRequestParametersBuilder {
         irnRequestParameters.add(new BasicNameValuePair("ORDER_AMOUNT", amount));
         irnRequestParameters.add(new BasicNameValuePair("ORDER_CURRENCY", currency));
         irnRequestParameters.add(new BasicNameValuePair("IRN_DATE", irnDate));
-        irnRequestParameters.add(new BasicNameValuePair("AMOUNT", amount));
         return irnRequestParameters;
     }
 }
