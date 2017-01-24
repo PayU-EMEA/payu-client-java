@@ -7,6 +7,8 @@ import ro.payu.example.idn.IdnRequestParametersBuilder;
 import ro.payu.example.idn.IdnResponseInterpreter;
 import ro.payu.example.ipn.IpnHttpServerBuilder;
 import ro.payu.example.ipn.IpnRequestProcessor;
+import ro.payu.example.irn.IrnRequestParametersBuilder;
+import ro.payu.example.irn.IrnResponseInterpreter;
 import ro.payu.lib.alu.AluAuthenticationService;
 import ro.payu.lib.alu.AluClient;
 import ro.payu.lib.alu.AluResponseParser;
@@ -18,6 +20,9 @@ import ro.payu.lib.common.server.DefaultHttpServer;
 import ro.payu.lib.idn.IdnAuthenticationService;
 import ro.payu.lib.idn.IdnClient;
 import ro.payu.lib.idn.IdnResponseParser;
+import ro.payu.lib.irn.IrnAuthenticationService;
+import ro.payu.lib.irn.IrnClient;
+import ro.payu.lib.irn.IrnResponseParser;
 
 import java.util.List;
 import java.util.concurrent.Semaphore;
@@ -33,12 +38,16 @@ public class ClientUsageExample {
 
     private static AluClient aluClient;
     private static IdnClient idnClient;
+    private static IrnClient irnClient;
 
     private static AluRequestParametersBuilder aluRequestParametersBuilder;
     private static AluResponseInterpreter aluResponseInterpreter;
 
     private static IdnRequestParametersBuilder idnRequestParametersBuilder;
     private static IdnResponseInterpreter idnResponseInterpreter;
+
+    private static IrnRequestParametersBuilder irnRequestParametersBuilder;
+    private static IrnResponseInterpreter irnResponseInterpreter;
 
     private static DefaultHttpServer ipnHttpServer;
     private static Semaphore semaphore;
@@ -50,13 +59,18 @@ public class ClientUsageExample {
 
         try {
             semaphore.acquire();
+            
             callAlu();
-
             semaphore.acquire();
+
             final List<NameValuePair> ipnRequestParameters = getIpnRequestParameters();
+            
             callIdn(ipnRequestParameters);
-
             semaphore.acquire();
+            
+            callIrn(ipnRequestParameters);
+            semaphore.acquire();
+
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
@@ -93,6 +107,17 @@ public class ClientUsageExample {
         }
     }
 
+    private static void callIrn(List<NameValuePair> ipnRequestParameters) throws CommunicationException, InvalidXmlResponseParsingException, InvalidSignatureException {
+        final List<NameValuePair> irnRequestParameters = irnRequestParametersBuilder.build(ipnRequestParameters);
+
+        final List<NameValuePair> irnResponseParameters = irnClient.call(irnRequestParameters);
+
+        irnResponseInterpreter.interpretResponseParameters(irnResponseParameters);
+        if (!irnResponseInterpreter.isSuccess(irnResponseParameters)) {
+            throw new RuntimeException("IRN response ERROR!");
+        }
+    }
+
     private static void setUp() {
 
         final ApiHttpClient apiHttpClient = new ApiHttpClient(SERVER_HOST, SERVER_PORT, SERVER_SCHEMA);
@@ -113,11 +138,20 @@ public class ClientUsageExample {
                 new IdnResponseParser(xmlResponseParser)
         ));
 
+        irnClient = new IrnClient(new ApiClient(
+                apiHttpClient,
+                new IrnAuthenticationService(authenticationService),
+                new IrnResponseParser(xmlResponseParser)
+        ));
+
         aluRequestParametersBuilder = new AluRequestParametersBuilder(MERCHANT_CODE);
         aluResponseInterpreter = new AluResponseInterpreter();
 
         idnRequestParametersBuilder = new IdnRequestParametersBuilder(MERCHANT_CODE);
         idnResponseInterpreter = new IdnResponseInterpreter();
+
+        irnRequestParametersBuilder = new IrnRequestParametersBuilder(MERCHANT_CODE);
+        irnResponseInterpreter = new IrnResponseInterpreter();
 
         semaphore = new Semaphore(1);
         ipnRequestProcessor = new IpnRequestProcessor(semaphore);

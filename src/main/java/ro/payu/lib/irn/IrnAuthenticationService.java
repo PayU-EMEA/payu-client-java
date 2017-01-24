@@ -1,4 +1,4 @@
-package ro.payu.lib.idn;
+package ro.payu.lib.irn;
 
 import org.apache.http.NameValuePair;
 import ro.payu.lib.common.authentication.ApiAuthenticationService;
@@ -10,17 +10,17 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-public class IdnAuthenticationService implements ApiAuthenticationService {
+public class IrnAuthenticationService implements ApiAuthenticationService {
 
     private static final String REQUEST_SIGNATURE_NAME = "ORDER_HASH";
     private static final String RESPONSE_SIGNATURE_NAME = "ORDER_HASH";
 
-    private static final List<String> PARAMETERS_EXCLUDED_FROM_REQUEST_SIGNATURE = Arrays.asList("REF_URL", "IDN_PRN", REQUEST_SIGNATURE_NAME);
+    private static final List<String> PARAMETERS_EXCLUDED_FROM_REQUEST_SIGNATURE = Arrays.asList("REF_URL", REQUEST_SIGNATURE_NAME);
     private static final List<String> PARAMETERS_EXCLUDED_FROM_RESPONSE_SIGNATURE = Collections.singletonList(RESPONSE_SIGNATURE_NAME);
 
     final private AuthenticationService authenticationService;
 
-    public IdnAuthenticationService(AuthenticationService authenticationService) {
+    public IrnAuthenticationService(AuthenticationService authenticationService) {
         this.authenticationService = authenticationService;
     }
 
