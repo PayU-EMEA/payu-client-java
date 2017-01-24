@@ -4,9 +4,7 @@ import org.apache.http.NameValuePair;
 
 import java.util.List;
 
-public interface ApiAuthenticationService {
+public interface ApiAuthenticationService extends VerifyAuthenticationService {
 
-    List<NameValuePair> addRequestSignature(final List<NameValuePair> requestParameters);
-
-    void verifyResponseSignature(final List<NameValuePair> responseParameters) throws InvalidSignatureException;
+    List<NameValuePair> addSignature(final List<NameValuePair> parameters);
 }

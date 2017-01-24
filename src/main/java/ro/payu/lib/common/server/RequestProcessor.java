@@ -7,4 +7,6 @@ import java.util.List;
 public interface RequestProcessor {
 
     void process(List<NameValuePair> requestParameters);
+
+    void error(String error, List<NameValuePair> requestParameters);
 }

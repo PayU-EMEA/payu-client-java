@@ -25,7 +25,7 @@ public class ApiClient {
 
     public List<NameValuePair> call(final String endpoint, final List<NameValuePair> requestParameters) throws CommunicationException, InvalidXmlResponseParsingException, InvalidSignatureException {
 
-        final List<NameValuePair> requestParametersWithSignature = apiAuthenticationService.addRequestSignature(requestParameters);
+        final List<NameValuePair> requestParametersWithSignature = apiAuthenticationService.addSignature(requestParameters);
 
         // create request
         final HttpPost httpRequest = new HttpPost(endpoint);
@@ -41,7 +41,7 @@ public class ApiClient {
 
         final List<NameValuePair> responseParameters = apiResponseParser.parseResponse(httpResponse);
 
-        apiAuthenticationService.verifyResponseSignature(responseParameters);
+        apiAuthenticationService.verifySignature(responseParameters);
 
         return responseParameters;
     }

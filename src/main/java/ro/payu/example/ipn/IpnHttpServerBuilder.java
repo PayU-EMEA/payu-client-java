@@ -13,9 +13,12 @@ public class IpnHttpServerBuilder {
     private static final String IPN_ENDPOINT = "/ipn";
 
     public static ApiHttpServer createServer(IpnRequestProcessor ipnRequestProcessor, AuthenticationService authenticationService) {
+
+        IpnAuthenticationService ipnAuthenticationService = new IpnAuthenticationService(authenticationService);
         ApiHttpHandler apiHttpHandler = new ApiHttpHandler(
                 ipnRequestProcessor,
-                new IpnResponseBuilder(new IpnAuthenticationService(authenticationService))
+                new IpnResponseBuilder(ipnAuthenticationService),
+                ipnAuthenticationService
         );
         return new ApiHttpServer(IPN_ENDPOINT, SERVER_PORT, apiHttpHandler);
     }

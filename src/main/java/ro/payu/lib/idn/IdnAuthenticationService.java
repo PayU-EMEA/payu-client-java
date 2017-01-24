@@ -24,20 +24,20 @@ public class IdnAuthenticationService implements ApiAuthenticationService {
         this.authenticationService = authenticationService;
     }
 
-    public List<NameValuePair> addRequestSignature(final List<NameValuePair> requestParameters) {
+    public List<NameValuePair> addSignature(final List<NameValuePair> parameters) {
 
         return authenticationService.addSignature(
-                requestParameters,
+                parameters,
                 PARAMETERS_EXCLUDED_FROM_REQUEST_SIGNATURE,
                 SignatureCalculator.getKeepSameParameterOrderComparator(),
                 REQUEST_SIGNATURE_NAME
         );
     }
 
-    public void verifyResponseSignature(final List<NameValuePair> responseParameters) throws InvalidSignatureException {
+    public void verifySignature(final List<NameValuePair> parameters) throws InvalidSignatureException {
 
         authenticationService.verifySignature(
-                responseParameters,
+                parameters,
                 PARAMETERS_EXCLUDED_FROM_RESPONSE_SIGNATURE,
                 SignatureCalculator.getKeepSameParameterOrderComparator(),
                 RESPONSE_SIGNATURE_NAME

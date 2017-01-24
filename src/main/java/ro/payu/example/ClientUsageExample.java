@@ -60,10 +60,10 @@ public class ClientUsageExample {
             waitForIpn();
 
             final List<NameValuePair> ipnRequestParameters = getIpnRequestParameters();
-            
+
             callIdn(ipnRequestParameters);
             waitForIpn();
-            
+
             callIrn(ipnRequestParameters);
             waitForIpn();
 
@@ -87,9 +87,14 @@ public class ClientUsageExample {
     }
 
     private static List<NameValuePair> getIpnRequestParameters() {
+
+        if (ipnRequestProcessor.getRequestParameters() == null || !ipnRequestProcessor.isSuccess()) {
+            throw new RuntimeException("IPN request ERROR!");
+        }
+
         return ipnRequestProcessor.getRequestParameters();
     }
-    
+
     private static void waitForIpn() {
         ipnRequestProcessor.waitForIpn();
     }
