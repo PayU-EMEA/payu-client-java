@@ -66,7 +66,7 @@ public class AluRequestParametersBuilder {
         parameters.add(new BasicNameValuePair("BILL_CNP", "1840329460055"));
         parameters.add(new BasicNameValuePair("BILL_COUNTRYCODE", "RO"));
         parameters.add(new BasicNameValuePair("BILL_EMAIL", "john.doe@payu.ro"));
-        parameters.add(new BasicNameValuePair("BILL_FNAME", "John"));
+        parameters.add(new BasicNameValuePair("BILL_FNAME", "Joăhn"));
         parameters.add(new BasicNameValuePair("BILL_LNAME", "Doe"));
         parameters.add(new BasicNameValuePair("BILL_PHONE", "+40721234567"));
         parameters.add(new BasicNameValuePair("BILL_STATE", "Bucharest"));
