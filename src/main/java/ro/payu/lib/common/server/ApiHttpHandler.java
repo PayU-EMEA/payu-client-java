@@ -34,6 +34,9 @@ public class ApiHttpHandler implements HttpRequestHandler {
             return;
         }
 
+        // we need to parse with charset UTF-8 because otherwise the IPN signature cannot be validated
+//        final List<NameValuePair> requestParameters = URLEncodedUtils.parse(((HttpEntityEnclosingRequest) request).getEntity());
+
         String requestBody = new BufferedReader(new InputStreamReader(((HttpEntityEnclosingRequest) request).getEntity().getContent())).readLine();
         final List<NameValuePair> requestParameters = URLEncodedUtils.parse(requestBody, Charset.forName("UTF-8"));
 
