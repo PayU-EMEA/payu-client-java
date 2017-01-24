@@ -53,6 +53,11 @@ public class ClientUsageExample {
 
     public static void main(String[] args) {
 
+        /*
+         * You may want to checkout first the branch "java_server_ipn_library" from the epayment repository
+         * and run liquibase with context "tr" (run-all.sh tr)
+         */
+
         setUp();
 
         try {
