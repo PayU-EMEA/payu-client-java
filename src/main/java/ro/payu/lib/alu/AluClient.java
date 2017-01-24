@@ -1,7 +1,7 @@
 package ro.payu.lib.alu;
 
 import org.apache.http.NameValuePair;
-import ro.payu.lib.common.authentication.BadResponseSignatureException;
+import ro.payu.lib.common.authentication.InvalidSignatureException;
 import ro.payu.lib.common.client.ApiClient;
 import ro.payu.lib.common.client.CommunicationException;
 import ro.payu.lib.common.client.InvalidXmlResponseParsingException;
@@ -18,7 +18,7 @@ public class AluClient {
         this.apiClient = apiClient;
     }
 
-    public List<NameValuePair> call(final List<NameValuePair> requestParameters) throws CommunicationException, InvalidXmlResponseParsingException, BadResponseSignatureException {
+    public List<NameValuePair> call(final List<NameValuePair> requestParameters) throws CommunicationException, InvalidXmlResponseParsingException, InvalidSignatureException {
 
         return apiClient.call(ALU_ENDPOINT, requestParameters);
     }

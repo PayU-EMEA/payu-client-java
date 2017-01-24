@@ -6,7 +6,7 @@ import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import ro.payu.lib.common.authentication.ApiAuthenticationService;
-import ro.payu.lib.common.authentication.BadResponseSignatureException;
+import ro.payu.lib.common.authentication.InvalidSignatureException;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -23,13 +23,13 @@ public class ApiClient {
         this.apiResponseParser = apiResponseParser;
     }
 
-    public List<NameValuePair> call(final String endpoint, final List<NameValuePair> requestParameters) throws CommunicationException, InvalidXmlResponseParsingException, BadResponseSignatureException {
+    public List<NameValuePair> call(final String endpoint, final List<NameValuePair> requestParameters) throws CommunicationException, InvalidXmlResponseParsingException, InvalidSignatureException {
 
-        final List<NameValuePair> requestParams = apiAuthenticationService.addRequestSignature(requestParameters);
+        final List<NameValuePair> requestParametersWithSignature = apiAuthenticationService.addRequestSignature(requestParameters);
 
         // create request
         final HttpPost httpRequest = new HttpPost(endpoint);
-        httpRequest.setEntity(new UrlEncodedFormEntity(requestParams, StandardCharsets.UTF_8));
+        httpRequest.setEntity(new UrlEncodedFormEntity(requestParametersWithSignature, StandardCharsets.UTF_8));
 
         // call http and obtain response
         final HttpResponse httpResponse;

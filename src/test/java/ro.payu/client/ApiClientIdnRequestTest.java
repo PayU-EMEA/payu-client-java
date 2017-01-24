@@ -31,7 +31,7 @@ package ro.payu.client;
 //        apiClient = new ApiClient(
 //                aluClient, new ApiAuthenticationService(
 //                        SECRET_KEY,
-//                        new AuthenticationService()
+//                        new SignatureCalculator()
 //                ),
 //                httpClientMock,
 //                new AluResponseXmlParser()
@@ -45,7 +45,7 @@ package ro.payu.client;
 //        apiClient = new ApiClient(
 //                aluClient, new ApiAuthenticationService(
 //                        SECRET_KEY,
-//                        new AuthenticationService()
+//                        new SignatureCalculator()
 //                ),
 //                new ApiHttpClient("ro.payu.local", 80, "http"),
 //                new AluResponseXmlParser()
@@ -77,7 +77,7 @@ package ro.payu.client;
 //    }
 //
 //    @Test
-//    public void testCallIdnSuccess() throws HttpException, BadResponseSignatureException, InvalidXmlResponseParsingException, CommunicationException, IOException {
+//    public void testCallIdnSuccess() throws HttpException, InvalidSignatureException, InvalidXmlResponseParsingException, CommunicationException, IOException {
 //
 //        // setup
 //        List<NameValuePair> expectedHttpRequestParameters = getRequestParametersListWithSignature();

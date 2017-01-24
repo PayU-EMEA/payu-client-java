@@ -11,9 +11,9 @@ import ro.payu.example.ipn.IpnRequestProcessor;
 import ro.payu.lib.alu.AluAuthenticationService;
 import ro.payu.lib.alu.AluClient;
 import ro.payu.lib.alu.AluResponseParser;
-import ro.payu.lib.common.authentication.ApiCommonAuthenticationService;
 import ro.payu.lib.common.authentication.AuthenticationService;
-import ro.payu.lib.common.authentication.BadResponseSignatureException;
+import ro.payu.lib.common.authentication.InvalidSignatureException;
+import ro.payu.lib.common.authentication.SignatureCalculator;
 import ro.payu.lib.common.client.*;
 import ro.payu.lib.common.server.DefaultHttpServer;
 import ro.payu.lib.idn.IdnAuthenticationService;
@@ -67,7 +67,7 @@ public class ClientUsageExample {
         }
     }
 
-    private static void callAlu() throws CommunicationException, InvalidXmlResponseParsingException, BadResponseSignatureException {
+    private static void callAlu() throws CommunicationException, InvalidXmlResponseParsingException, InvalidSignatureException {
 
         final List<NameValuePair> aluRequestParameters = aluRequestParametersBuilder.buildRequestParameters();
 
@@ -91,7 +91,7 @@ public class ClientUsageExample {
         return ipnRequestParameters;
     }
 
-    private static void callIdn(List<NameValuePair> ipnRequestParameters) throws CommunicationException, InvalidXmlResponseParsingException, BadResponseSignatureException {
+    private static void callIdn(List<NameValuePair> ipnRequestParameters) throws CommunicationException, InvalidXmlResponseParsingException, InvalidSignatureException {
 
         final List<NameValuePair> idnRequestParameters = idnRequestParametersBuilder.build(ipnRequestParameters);
 
@@ -106,20 +106,20 @@ public class ClientUsageExample {
     private static void setUp() {
 
         final ApiHttpClient apiHttpClient = new ApiHttpClient(SERVER_HOST, SERVER_PORT, SERVER_SCHEMA);
-        final ApiCommonAuthenticationService apiCommonAuthenticationService = new ApiCommonAuthenticationService(
-                new AuthenticationService(),
+        final AuthenticationService authenticationService = new AuthenticationService(
+                new SignatureCalculator(),
                 MERCHANT_SECRET_KEY
         );
         final XmlResponseParser xmlResponseParser = new XmlResponseParser();
         aluClient = new AluClient(new ApiClient(
                 apiHttpClient,
-                new AluAuthenticationService(apiCommonAuthenticationService),
+                new AluAuthenticationService(authenticationService),
                 new AluResponseParser(xmlResponseParser)
         ));
 
         idnClient = new IdnClient(new ApiClient(
                 apiHttpClient,
-                new IdnAuthenticationService(apiCommonAuthenticationService),
+                new IdnAuthenticationService(authenticationService),
                 new IdnResponseParser(xmlResponseParser)
         ));
 
