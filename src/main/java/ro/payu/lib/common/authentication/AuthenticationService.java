@@ -1,49 +1,82 @@
 package ro.payu.lib.common.authentication;
 
 import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
 
-import javax.crypto.Mac;
-import javax.crypto.spec.SecretKeySpec;
-import java.nio.charset.StandardCharsets;
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.Formatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public final class AuthenticationService {
+public class AuthenticationService {
 
-    public final String computeSignature(List<NameValuePair> parameters,
-                                         Comparator<NameValuePair> comparator,
-                                         String secretKey) {
+    private static final String DEFAULT_SECRET_KEY = "SECRET_KEY";
 
-        final String stringToHash = parameters.stream()
-                .sorted(comparator)
-                .map(nameValuePair -> String.valueOf(nameValuePair.getValue().getBytes().length) + nameValuePair.getValue())
-                .collect(Collectors.joining(""));
+    final private SignatureCalculator signatureCalculator;
+    final private String secretKey;
 
-        return hMacMD5(stringToHash, secretKey);
+    public AuthenticationService(SignatureCalculator signatureCalculator) {
+        this(signatureCalculator, DEFAULT_SECRET_KEY);
     }
 
-    private String hMacMD5(String stringToHash, String secretKey) {
-        final SecretKeySpec secretKeySpec = new SecretKeySpec(secretKey.getBytes(StandardCharsets.UTF_8), "HmacMD5");
-        final Mac hMacMD5;
+    public AuthenticationService(SignatureCalculator signatureCalculator, String secretKey) {
+        this.signatureCalculator = signatureCalculator;
+        this.secretKey = secretKey;
+    }
 
-        try {
-            hMacMD5 = Mac.getInstance("HmacMD5");
-            hMacMD5.init(secretKeySpec);
-        } catch (NoSuchAlgorithmException | InvalidKeyException e) {
-            throw new RuntimeException(e);
+    public List<NameValuePair> addSignature(
+            final List<NameValuePair> parameters,
+            final List<String> fieldsExcludedFromSignature,
+            Comparator<NameValuePair> parametersSortingComparator,
+            final String signatureParameterName
+    ) {
+
+        final List<NameValuePair> parametersToBeSigned = parameters.stream()
+                .filter(nameValuePair -> !fieldsExcludedFromSignature.contains(nameValuePair.getName()))
+                .collect(Collectors.toList());
+
+        final String signature = signatureCalculator.computeSignature(
+                parametersToBeSigned,
+                parametersSortingComparator,
+                secretKey
+        );
+
+        final List<NameValuePair> parametersWithSignature = new ArrayList<>(parameters);
+        parametersWithSignature.add(new BasicNameValuePair(signatureParameterName, signature));
+
+        return parametersWithSignature;
+    }
+
+    public void verifySignature(
+            final List<NameValuePair> parameters,
+            final List<String> fieldsExcludedFromSignature,
+            Comparator<NameValuePair> parametersSortingComparator,
+            final String signatureParameterName
+    ) throws InvalidSignatureException {
+
+        String signature = "";
+        for (NameValuePair parameter : parameters) {
+            if (parameter.getName().equals(signatureParameterName)) {
+                signature = parameter.getValue();
+            }
         }
 
-        byte[] signatureBytes = hMacMD5.doFinal(stringToHash.getBytes(StandardCharsets.UTF_8));
-
-        Formatter formatter = new Formatter();
-        for (byte signatureByte : signatureBytes) {
-            formatter.format("%02x", signatureByte);
+        if (signature.equals("")) {
+            throw new InvalidSignatureException("Missing signature parameter " + signatureParameterName);
         }
 
-        return formatter.toString();
+        final List<NameValuePair> parametersToBeSigned = parameters.stream()
+                .filter(nameValuePair -> !fieldsExcludedFromSignature.contains(nameValuePair.getName()))
+                .collect(Collectors.toList());
+
+        final String expectedSignature = signatureCalculator.computeSignature(
+                parametersToBeSigned,
+                parametersSortingComparator,
+                secretKey
+        );
+
+        if (!expectedSignature.equals(signature.toLowerCase())) {
+            throw new InvalidSignatureException("Signature mismatch. Expected: " + expectedSignature + "; Actual: " + signature);
+        }
     }
 }

@@ -2,8 +2,9 @@ package ro.payu.lib.idn;
 
 import org.apache.http.NameValuePair;
 import ro.payu.lib.common.authentication.ApiAuthenticationService;
-import ro.payu.lib.common.authentication.ApiCommonAuthenticationService;
-import ro.payu.lib.common.authentication.BadResponseSignatureException;
+import ro.payu.lib.common.authentication.AuthenticationService;
+import ro.payu.lib.common.authentication.InvalidSignatureException;
+import ro.payu.lib.common.authentication.SignatureCalculator;
 
 import java.util.Arrays;
 import java.util.List;
@@ -16,28 +17,28 @@ public class IdnAuthenticationService implements ApiAuthenticationService {
     private static final List<String> PARAMETERS_EXCLUDED_FROM_REQUEST_SIGNATURE = Arrays.asList("REF_URL", "IDN_PRN", REQUEST_SIGNATURE_NAME);
     private static final List<String> PARAMETERS_EXCLUDED_FROM_RESPONSE_SIGNATURE = Arrays.asList(RESPONSE_SIGNATURE_NAME);
 
-    final private ApiCommonAuthenticationService apiCommonAuthenticationService;
+    final private AuthenticationService authenticationService;
 
-    public IdnAuthenticationService(ApiCommonAuthenticationService apiCommonAuthenticationService) {
-        this.apiCommonAuthenticationService = apiCommonAuthenticationService;
+    public IdnAuthenticationService(AuthenticationService authenticationService) {
+        this.authenticationService = authenticationService;
     }
 
     public List<NameValuePair> addRequestSignature(final List<NameValuePair> requestParameters) {
 
-        return apiCommonAuthenticationService.addRequestSignature(
+        return authenticationService.addSignature(
                 requestParameters,
                 PARAMETERS_EXCLUDED_FROM_REQUEST_SIGNATURE,
-                apiCommonAuthenticationService.getKeepSameParameterOrderComparator(),
+                SignatureCalculator.getKeepSameParameterOrderComparator(),
                 REQUEST_SIGNATURE_NAME
         );
     }
 
-    public void verifyResponseSignature(final List<NameValuePair> responseParameters) throws BadResponseSignatureException {
+    public void verifyResponseSignature(final List<NameValuePair> responseParameters) throws InvalidSignatureException {
 
-        apiCommonAuthenticationService.verifyResponseSignature(
+        authenticationService.verifySignature(
                 responseParameters,
                 PARAMETERS_EXCLUDED_FROM_RESPONSE_SIGNATURE,
-                apiCommonAuthenticationService.getKeepSameParameterOrderComparator(),
+                SignatureCalculator.getKeepSameParameterOrderComparator(),
                 RESPONSE_SIGNATURE_NAME
         );
     }

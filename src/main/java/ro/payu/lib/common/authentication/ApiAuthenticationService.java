@@ -8,5 +8,5 @@ public interface ApiAuthenticationService {
 
     List<NameValuePair> addRequestSignature(final List<NameValuePair> requestParameters);
 
-    void verifyResponseSignature(final List<NameValuePair> responseParameters) throws BadResponseSignatureException;
+    void verifyResponseSignature(final List<NameValuePair> responseParameters) throws InvalidSignatureException;
 }
