@@ -121,8 +121,7 @@ public class ClientUsageExample {
 
         semaphore = new Semaphore(1);
         ipnRequestProcessor = new IpnRequestProcessor(semaphore);
-        ipnHttpServer = IpnHttpServerBuilder.createServer(ipnRequestProcessor);
+        ipnHttpServer = IpnHttpServerBuilder.createServer(ipnRequestProcessor, authenticationService);
         ipnHttpServer.start();
     }
-
 }

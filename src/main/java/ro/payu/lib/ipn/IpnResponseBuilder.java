@@ -16,10 +16,19 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import java.io.StringWriter;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 
 public class IpnResponseBuilder implements ResponseBuilder {
+
+    private IpnAuthenticationService ipnAuthenticationService;
+
+    public IpnResponseBuilder(IpnAuthenticationService ipnAuthenticationService) {
+        this.ipnAuthenticationService = ipnAuthenticationService;
+    }
 
     @Override
     public List<NameValuePair> getHeaders() {
@@ -45,8 +54,10 @@ public class IpnResponseBuilder implements ResponseBuilder {
         Element rootElement = document.createElement("EPAYMENT");
         document.appendChild(rootElement);
 
-        // TODO
-        Text textElement = document.createTextNode("DATE|HASH");
+        String responseDate = LocalDateTime.now(ZoneOffset.UTC).format(DateTimeFormatter.ofPattern("yyyyMMddHHmmss"));
+        String responseHash = ipnAuthenticationService.computeResponseSignature(requestParameters, responseDate);
+
+        Text textElement = document.createTextNode(responseDate + "|" + responseHash);
         rootElement.appendChild(textElement);
 
         StringWriter stringWriter = new StringWriter();

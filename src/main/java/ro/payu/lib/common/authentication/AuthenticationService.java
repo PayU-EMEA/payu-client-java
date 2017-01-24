@@ -27,7 +27,7 @@ public class AuthenticationService {
     public List<NameValuePair> addSignature(
             final List<NameValuePair> parameters,
             final List<String> fieldsExcludedFromSignature,
-            Comparator<NameValuePair> parametersSortingComparator,
+            final Comparator<NameValuePair> parametersSortingComparator,
             final String signatureParameterName
     ) {
 
@@ -47,10 +47,18 @@ public class AuthenticationService {
         return parametersWithSignature;
     }
 
+    public String computeSignature(final List<NameValuePair> parametersToBeSigned, final Comparator<NameValuePair> parametersSortingComparator) {
+        return signatureCalculator.computeSignature(
+                parametersToBeSigned,
+                parametersSortingComparator,
+                secretKey
+        );
+    }
+
     public void verifySignature(
             final List<NameValuePair> parameters,
             final List<String> fieldsExcludedFromSignature,
-            Comparator<NameValuePair> parametersSortingComparator,
+            final Comparator<NameValuePair> parametersSortingComparator,
             final String signatureParameterName
     ) throws InvalidSignatureException {
 
