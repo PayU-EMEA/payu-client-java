@@ -29,7 +29,7 @@ public class AluRequestParametersBuilder {
         parameters.add(new BasicNameValuePair("MERCHANT", merchantCode));
         parameters.add(new BasicNameValuePair("ORDER_REF", orderReference));
         parameters.add(new BasicNameValuePair("ORDER_DATE", orderData));
-        parameters.add(new BasicNameValuePair("BACK_REF", "http://dev.indispus.ro/emag/return.php"));
+        parameters.add(new BasicNameValuePair("BACK_REF", "https://ro.payu.local/backend/simulators/return.php"));
         parameters.add(new BasicNameValuePair("ORDER_TIMEOUT", "3000"));
 
         parameters.add(new BasicNameValuePair("PRICES_CURRENCY", "TRY"));
@@ -50,7 +50,7 @@ public class AluRequestParametersBuilder {
         parameters.add(new BasicNameValuePair("CC_CVV", "000"));
         parameters.add(new BasicNameValuePair("CC_NUMBER", "4355084355084358"));
         parameters.add(new BasicNameValuePair("CC_NUMBER_TIME", "10.34"));
-        parameters.add(new BasicNameValuePair("CC_OWNER", "Andrei Susanu"));
+        parameters.add(new BasicNameValuePair("CC_OWNER", "John Doe"));
         parameters.add(new BasicNameValuePair("CC_OWNER_TIME", "9.72"));
         parameters.add(new BasicNameValuePair("CC_TYPE", "VISA"));
         parameters.add(new BasicNameValuePair("CLIENT_IP", "91.220.167.100"));
@@ -65,9 +65,9 @@ public class AluRequestParametersBuilder {
         parameters.add(new BasicNameValuePair("BILL_CITY", "Bucuresti"));
         parameters.add(new BasicNameValuePair("BILL_CNP", "1840329460055"));
         parameters.add(new BasicNameValuePair("BILL_COUNTRYCODE", "RO"));
-        parameters.add(new BasicNameValuePair("BILL_EMAIL", "andrei.susanu@payu.ro"));
-        parameters.add(new BasicNameValuePair("BILL_FNAME", "Andrei"));
-        parameters.add(new BasicNameValuePair("BILL_LNAME", "Susanu"));
+        parameters.add(new BasicNameValuePair("BILL_EMAIL", "john.doe@payu.ro"));
+        parameters.add(new BasicNameValuePair("BILL_FNAME", "John"));
+        parameters.add(new BasicNameValuePair("BILL_LNAME", "Doe"));
         parameters.add(new BasicNameValuePair("BILL_PHONE", "+40721234567"));
         parameters.add(new BasicNameValuePair("BILL_STATE", "Bucharest"));
         parameters.add(new BasicNameValuePair("BILL_ZIPCODE", "062173"));
@@ -75,8 +75,8 @@ public class AluRequestParametersBuilder {
         parameters.add(new BasicNameValuePair("DELIVERY_ADDRESS", "Strada Ardealului"));
         parameters.add(new BasicNameValuePair("DELIVERY_CITY", "Bucuresti"));
         parameters.add(new BasicNameValuePair("DELIVERY_COUNTRYCODE", "RO"));
-        parameters.add(new BasicNameValuePair("DELIVERY_FNAME", "Susanu"));
-        parameters.add(new BasicNameValuePair("DELIVERY_LNAME", "Andrei"));
+        parameters.add(new BasicNameValuePair("DELIVERY_FNAME", "Doe"));
+        parameters.add(new BasicNameValuePair("DELIVERY_LNAME", "John"));
         parameters.add(new BasicNameValuePair("DELIVERY_PHONE", "+40721234987"));
         parameters.add(new BasicNameValuePair("DELIVERY_STATE", "Sector 1"));
         parameters.add(new BasicNameValuePair("DELIVERY_ZIPCODE", "062173"));
