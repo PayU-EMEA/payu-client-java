@@ -24,7 +24,7 @@ public class IpnHttpServerBuilder {
 
     public static void main(String[] args) {
         DefaultHttpServer httpServer = IpnHttpServerBuilder.createServer(
-                new IpnRequestProcessor(new Semaphore(1)),
+                new IpnRequestProcessor(),
                 new AuthenticationService(new SignatureCalculator())
         );
         httpServer.start();

@@ -12,8 +12,9 @@ public class IpnRequestProcessor implements RequestProcessor {
 
     private List<NameValuePair> requestParameters;
 
-    public IpnRequestProcessor(Semaphore semaphore) {
-        this.semaphore = semaphore;
+    public IpnRequestProcessor() {
+        semaphore = new Semaphore(1);
+        waitForIpn();
     }
 
     @Override
@@ -25,6 +26,10 @@ public class IpnRequestProcessor implements RequestProcessor {
         System.out.println(requestParameters);
 
         semaphore.release();
+    }
+
+    public void waitForIpn() {
+        semaphore.acquireUninterruptibly();
     }
 
     public List<NameValuePair> getRequestParameters() {

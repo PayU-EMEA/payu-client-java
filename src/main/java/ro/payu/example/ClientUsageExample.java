@@ -50,7 +50,6 @@ public class ClientUsageExample {
     private static IrnResponseInterpreter irnResponseInterpreter;
 
     private static DefaultHttpServer ipnHttpServer;
-    private static Semaphore semaphore;
     private static IpnRequestProcessor ipnRequestProcessor;
 
     public static void main(String[] args) {
@@ -58,18 +57,16 @@ public class ClientUsageExample {
         setUp();
 
         try {
-            semaphore.acquire();
-            
             callAlu();
-            semaphore.acquire();
+            waitForIpn();
 
             final List<NameValuePair> ipnRequestParameters = getIpnRequestParameters();
             
             callIdn(ipnRequestParameters);
-            semaphore.acquire();
+            waitForIpn();
             
             callIrn(ipnRequestParameters);
-            semaphore.acquire();
+            waitForIpn();
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -91,8 +88,11 @@ public class ClientUsageExample {
     }
 
     private static List<NameValuePair> getIpnRequestParameters() {
-
         return ipnRequestProcessor.getRequestParameters();
+    }
+    
+    private static void waitForIpn() {
+        ipnRequestProcessor.waitForIpn();
     }
 
     private static void callIdn(List<NameValuePair> ipnRequestParameters) throws CommunicationException, InvalidXmlResponseParsingException, InvalidSignatureException {
@@ -153,8 +153,7 @@ public class ClientUsageExample {
         irnRequestParametersBuilder = new IrnRequestParametersBuilder(MERCHANT_CODE);
         irnResponseInterpreter = new IrnResponseInterpreter();
 
-        semaphore = new Semaphore(1);
-        ipnRequestProcessor = new IpnRequestProcessor(semaphore);
+        ipnRequestProcessor = new IpnRequestProcessor();
         ipnHttpServer = IpnHttpServerBuilder.createServer(ipnRequestProcessor, authenticationService);
         ipnHttpServer.start();
     }
