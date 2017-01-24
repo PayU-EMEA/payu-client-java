@@ -1,10 +1,10 @@
 package ro.payu.lib.common.server;
 
 
-import com.sun.net.httpserver.HttpServer;
+import org.apache.http.impl.bootstrap.HttpServer;
+import org.apache.http.impl.bootstrap.ServerBootstrap;
 
 import java.io.IOException;
-import java.net.InetSocketAddress;
 
 public class DefaultHttpServer {
 
@@ -12,21 +12,21 @@ public class DefaultHttpServer {
 
     public DefaultHttpServer(String endpoint, int port, DefaultHttpHandler httpHandler) {
 
-        try {
-            server = HttpServer.create(new InetSocketAddress(port), 0);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
-        server.createContext(endpoint, httpHandler);
-        server.setExecutor(null); // creates a default executor (taken from oracle doc example)
+        server = ServerBootstrap.bootstrap()
+                .setListenerPort(port)
+                .registerHandler(endpoint, httpHandler)
+                .create();
     }
 
     public void start() {
-        server.start();
+        try {
+            server.start();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public void stop() {
-        server.stop(1);
+        server.stop();
     }
 }

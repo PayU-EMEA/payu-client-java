@@ -1,45 +1,43 @@
 package ro.payu.lib.common.server;
 
-import com.sun.net.httpserver.Headers;
-import com.sun.net.httpserver.HttpExchange;
-import com.sun.net.httpserver.HttpHandler;
-import org.apache.http.NameValuePair;
+import org.apache.http.*;
+import org.apache.http.client.utils.URLEncodedUtils;
+import org.apache.http.entity.StringEntity;
+import org.apache.http.protocol.HttpContext;
+import org.apache.http.protocol.HttpRequestHandler;
 
 import java.io.IOException;
-import java.io.OutputStream;
 import java.util.List;
 
-public class DefaultHttpHandler implements HttpHandler {
+public class DefaultHttpHandler implements HttpRequestHandler {
 
-    final private RequestParser requestParser;
     final private RequestProcessor requestProcessor;
     final private ResponseBuilder responseBuilder;
 
-    public DefaultHttpHandler(RequestParser requestParser, RequestProcessor requestProcessor, ResponseBuilder responseBuilder) {
-        this.requestParser = requestParser;
+    public DefaultHttpHandler(RequestProcessor requestProcessor, ResponseBuilder responseBuilder) {
         this.requestProcessor = requestProcessor;
         this.responseBuilder = responseBuilder;
     }
 
     @Override
-    public void handle(HttpExchange httpExchange) throws IOException {
+    public void handle(HttpRequest request, HttpResponse response, HttpContext context) throws HttpException, IOException {
+        if (!(request instanceof HttpEntityEnclosingRequest)) {
+            response.setStatusCode(405);
+            return;
+        }
 
-        final List<NameValuePair> requestParameters = requestParser.getRequestParameters(httpExchange.getRequestBody());
+        final List<NameValuePair> requestParameters = URLEncodedUtils.parse(((HttpEntityEnclosingRequest) request).getEntity());
 
         requestProcessor.process(requestParameters);
 
-        Headers responseHeaders = httpExchange.getResponseHeaders();
-
         List<NameValuePair> headersList = responseBuilder.getHeaders();
         for (NameValuePair header : headersList) {
-            responseHeaders.add(header.getName(), header.getValue());
+            response.addHeader(header.getName(), header.getValue());
         }
 
         String responseBody = responseBuilder.getBody(requestParameters);
 
-        httpExchange.sendResponseHeaders(200, responseBody.length());
-        OutputStream os = httpExchange.getResponseBody();
-        os.write(responseBody.getBytes());
-        os.close();
+        response.setEntity(new StringEntity(responseBody));
+        response.setStatusCode(200);
     }
 }
