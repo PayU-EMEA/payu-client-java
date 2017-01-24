@@ -32,8 +32,21 @@ public class ClientUsageExample {
     private static final int SERVER_PORT = 80;
     private static final String SERVER_HOST = "tr.payu.local";
 
+    // production connection settings
+//    private static final String SERVER_SCHEMA = "https";
+//    private static final int SERVER_PORT = 443;
+//    private static final String SERVER_HOST = "secure.payu.com.tr";
+
     private static final String MERCHANT_CODE = "PAYU_2";
     private static final String MERCHANT_SECRET_KEY = "SECRET_KEY";
+
+    // production credentials
+//    private static final String MERCHANT_CODE = "OPU_TEST";
+//    private static final String MERCHANT_SECRET_KEY = "SECRET_KEY";
+
+    // production credentials
+//    private static final String MERCHANT_CODE = "PALJZXGV";
+//    private static final String MERCHANT_SECRET_KEY = "f*%J7z6_#|5]s7V4[g3]";
 
     private static AluClient aluClient;
     private static IdnClient idnClient;
