@@ -6,11 +6,11 @@ import org.apache.http.impl.bootstrap.ServerBootstrap;
 
 import java.io.IOException;
 
-public class DefaultHttpServer {
+public class ApiHttpServer {
 
     private HttpServer server;
 
-    public DefaultHttpServer(String endpoint, int port, DefaultHttpHandler httpHandler) {
+    public ApiHttpServer(String endpoint, int port, ApiHttpHandler httpHandler) {
 
         server = ServerBootstrap.bootstrap()
                 .setListenerPort(port)

@@ -9,12 +9,12 @@ import org.apache.http.protocol.HttpRequestHandler;
 import java.io.IOException;
 import java.util.List;
 
-public class DefaultHttpHandler implements HttpRequestHandler {
+public class ApiHttpHandler implements HttpRequestHandler {
 
     final private RequestProcessor requestProcessor;
     final private ResponseBuilder responseBuilder;
 
-    public DefaultHttpHandler(RequestProcessor requestProcessor, ResponseBuilder responseBuilder) {
+    public ApiHttpHandler(RequestProcessor requestProcessor, ResponseBuilder responseBuilder) {
         this.requestProcessor = requestProcessor;
         this.responseBuilder = responseBuilder;
     }

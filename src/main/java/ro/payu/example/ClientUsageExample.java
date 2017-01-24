@@ -16,7 +16,7 @@ import ro.payu.lib.common.authentication.AuthenticationService;
 import ro.payu.lib.common.authentication.InvalidSignatureException;
 import ro.payu.lib.common.authentication.SignatureCalculator;
 import ro.payu.lib.common.client.*;
-import ro.payu.lib.common.server.DefaultHttpServer;
+import ro.payu.lib.common.server.ApiHttpServer;
 import ro.payu.lib.idn.IdnAuthenticationService;
 import ro.payu.lib.idn.IdnClient;
 import ro.payu.lib.idn.IdnResponseParser;
@@ -25,7 +25,6 @@ import ro.payu.lib.irn.IrnClient;
 import ro.payu.lib.irn.IrnResponseParser;
 
 import java.util.List;
-import java.util.concurrent.Semaphore;
 
 public class ClientUsageExample {
 
@@ -49,7 +48,7 @@ public class ClientUsageExample {
     private static IrnRequestParametersBuilder irnRequestParametersBuilder;
     private static IrnResponseInterpreter irnResponseInterpreter;
 
-    private static DefaultHttpServer ipnHttpServer;
+    private static ApiHttpServer ipnHttpServer;
     private static IpnRequestProcessor ipnRequestProcessor;
 
     public static void main(String[] args) {
