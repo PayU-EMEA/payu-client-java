@@ -28,7 +28,12 @@ public class DefaultHttpHandler implements HttpRequestHandler {
 
         final List<NameValuePair> requestParameters = URLEncodedUtils.parse(((HttpEntityEnclosingRequest) request).getEntity());
 
-        requestProcessor.process(requestParameters);
+        try {
+            requestProcessor.process(requestParameters);
+        } catch (Exception e) {
+            response.setStatusCode(400);
+            return;
+        }
 
         List<NameValuePair> headersList = responseBuilder.getHeaders();
         for (NameValuePair header : headersList) {

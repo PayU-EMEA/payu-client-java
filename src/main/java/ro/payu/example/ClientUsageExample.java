@@ -6,7 +6,6 @@ import ro.payu.example.alu.AluResponseInterpreter;
 import ro.payu.example.idn.IdnRequestParametersBuilder;
 import ro.payu.example.idn.IdnResponseInterpreter;
 import ro.payu.example.ipn.IpnHttpServerBuilder;
-import ro.payu.example.ipn.IpnRequestInterpreter;
 import ro.payu.example.ipn.IpnRequestProcessor;
 import ro.payu.lib.alu.AluAuthenticationService;
 import ro.payu.lib.alu.AluClient;
@@ -41,7 +40,6 @@ public class ClientUsageExample {
     private static IdnRequestParametersBuilder idnRequestParametersBuilder;
     private static IdnResponseInterpreter idnResponseInterpreter;
 
-    private static IpnRequestInterpreter ipnRequestInterpreter;
     private static DefaultHttpServer ipnHttpServer;
     private static Semaphore semaphore;
     private static IpnRequestProcessor ipnRequestProcessor;
@@ -55,13 +53,12 @@ public class ClientUsageExample {
             callAlu();
 
             semaphore.acquire();
-            final List<NameValuePair> ipnRequestParameters = processIpnRequest();
-
+            final List<NameValuePair> ipnRequestParameters = getIpnRequestParameters();
             callIdn(ipnRequestParameters);
 
+            semaphore.acquire();
         } catch (Exception e) {
             e.printStackTrace();
-
         } finally {
             ipnHttpServer.stop();
         }
@@ -79,16 +76,9 @@ public class ClientUsageExample {
         }
     }
 
-    private static List<NameValuePair> processIpnRequest() {
+    private static List<NameValuePair> getIpnRequestParameters() {
 
-        final List<NameValuePair> ipnRequestParameters = ipnRequestProcessor.getRequestParameters();
-
-        ipnRequestInterpreter.interpretRequestParameters(ipnRequestParameters);
-        if (!ipnRequestInterpreter.isSuccess(ipnRequestParameters)) {
-            throw new RuntimeException("IPN request ERROR!");
-        }
-
-        return ipnRequestParameters;
+        return ipnRequestProcessor.getRequestParameters();
     }
 
     private static void callIdn(List<NameValuePair> ipnRequestParameters) throws CommunicationException, InvalidXmlResponseParsingException, InvalidSignatureException {
@@ -129,7 +119,6 @@ public class ClientUsageExample {
         idnRequestParametersBuilder = new IdnRequestParametersBuilder(MERCHANT_CODE);
         idnResponseInterpreter = new IdnResponseInterpreter();
 
-        ipnRequestInterpreter = new IpnRequestInterpreter();
         semaphore = new Semaphore(1);
         ipnRequestProcessor = new IpnRequestProcessor(semaphore);
         ipnHttpServer = IpnHttpServerBuilder.createServer(ipnRequestProcessor);

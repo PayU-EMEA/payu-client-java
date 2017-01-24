@@ -20,6 +20,10 @@ public class IpnRequestProcessor implements RequestProcessor {
     public void process(List<NameValuePair> requestParameters) {
         this.requestParameters = requestParameters;
 
+        System.out.println();
+        System.out.println("IPN incoming request:");
+        System.out.println(requestParameters);
+
         semaphore.release();
     }
 
