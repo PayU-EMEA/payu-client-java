@@ -7,5 +7,6 @@ import java.util.List;
 public interface ResponseBuilder {
 
     List<NameValuePair> getHeaders();
+
     String getBody(List<NameValuePair> requestParameters);
 }

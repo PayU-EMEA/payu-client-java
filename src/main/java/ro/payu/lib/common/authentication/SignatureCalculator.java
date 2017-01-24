@@ -14,6 +14,14 @@ import java.util.stream.Collectors;
 
 public final class SignatureCalculator {
 
+    public static Comparator<NameValuePair> getParameterNameSortedComparator() {
+        return Comparator.comparing(NameValuePair::getName);
+    }
+
+    public static Comparator<NameValuePair> getKeepSameParameterOrderComparator() {
+        return (NameValuePair p1, NameValuePair p2) -> 0;
+    }
+
     public final String computeSignature(List<NameValuePair> parameters,
                                          Comparator<NameValuePair> comparator,
                                          String secretKey) {
@@ -45,13 +53,5 @@ public final class SignatureCalculator {
         }
 
         return formatter.toString();
-    }
-
-    public static Comparator<NameValuePair> getParameterNameSortedComparator() {
-        return Comparator.comparing(NameValuePair::getName);
-    }
-
-    public static Comparator<NameValuePair> getKeepSameParameterOrderComparator() {
-        return (NameValuePair p1, NameValuePair p2) -> 0;
     }
 }
