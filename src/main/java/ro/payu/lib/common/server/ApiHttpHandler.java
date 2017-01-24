@@ -22,7 +22,7 @@ public class ApiHttpHandler implements HttpRequestHandler {
     @Override
     public void handle(HttpRequest request, HttpResponse response, HttpContext context) throws HttpException, IOException {
         if (!(request instanceof HttpEntityEnclosingRequest)) {
-            response.setStatusCode(405);
+            response.setStatusCode(400);
             return;
         }
 
