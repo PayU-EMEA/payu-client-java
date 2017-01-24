@@ -54,7 +54,7 @@ public class AluRequestParametersBuilder {
         parameters.add(new BasicNameValuePair("CC_OWNER_TIME", "9.72"));
         parameters.add(new BasicNameValuePair("CC_TYPE", "VISA"));
         parameters.add(new BasicNameValuePair("CLIENT_IP", "91.220.167.100"));
-        parameters.add(new BasicNameValuePair("EXP_MONTH", "12"));
+        parameters.add(new BasicNameValuePair("EXP_MONTH", "11"));
         parameters.add(new BasicNameValuePair("EXP_YEAR", "2018"));
 
 
