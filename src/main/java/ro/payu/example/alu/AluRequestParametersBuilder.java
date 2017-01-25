@@ -8,7 +8,6 @@ import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 public class AluRequestParametersBuilder {
 
@@ -19,10 +18,8 @@ public class AluRequestParametersBuilder {
 
     }
 
-    public List<NameValuePair> buildRequestParameters() {
+    public List<NameValuePair> buildRequestParameters(String orderReference) {
         final List<NameValuePair> parameters = new ArrayList<>();
-
-        String orderReference = UUID.randomUUID().toString().substring(0, 17);
 
         String orderData = LocalDateTime.now(ZoneOffset.UTC).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
 

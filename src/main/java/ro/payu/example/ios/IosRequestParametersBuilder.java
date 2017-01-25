@@ -18,21 +18,12 @@ public class IosRequestParametersBuilder {
         this.merchantCode = merchantCode;
     }
 
-    public List<NameValuePair> build(List<NameValuePair> ipnRequestParameters) {
+    public List<NameValuePair> build(String orderReference) {
         String iosDate = LocalDateTime.now(ZoneOffset.UTC).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-
-        String orderRefExternal = "";
-        for (NameValuePair pair : ipnRequestParameters) {
-            switch (pair.getName()) {
-                case "ORDER_REF":
-                    orderRefExternal = pair.getValue();
-                    break;
-            }
-        }
 
         final List<NameValuePair> iosRequestParameters = new ArrayList<>();
         iosRequestParameters.add(new BasicNameValuePair("MERCHANT", merchantCode));
-        iosRequestParameters.add(new BasicNameValuePair("REFNOEXT", orderRefExternal));
+        iosRequestParameters.add(new BasicNameValuePair("REFNOEXT", orderReference));
         return iosRequestParameters;
     }
 }

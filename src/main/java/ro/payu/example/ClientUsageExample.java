@@ -30,6 +30,7 @@ import ro.payu.lib.irn.IrnClient;
 import ro.payu.lib.irn.IrnResponseParser;
 
 import java.util.List;
+import java.util.UUID;
 
 public class ClientUsageExample {
 
@@ -78,21 +79,25 @@ public class ClientUsageExample {
         setUp();
 
         try {
+            String orderReference = UUID.randomUUID().toString().substring(0, 17);
 
-            callAlu();
+            setExpectedIpn(orderReference);
+            callAlu(orderReference);
             final List<NameValuePair> aluResponseParameters = getAluResponseParameters();
-            waitForIpn(aluResponseParameters);
-            callIos(aluResponseParameters);
+            waitForIpn();
+            callIos(orderReference);
 
             final List<NameValuePair> ipnRequestParameters = getIpnRequestParameters();
 
+            setExpectedIpn(orderReference);
             callIdn(ipnRequestParameters);
-            waitForIpn(aluResponseParameters);
-            callIos(aluResponseParameters);
+            waitForIpn();
+            callIos(orderReference);
 
+            setExpectedIpn(orderReference);
             callIrn(ipnRequestParameters);
-            waitForIpn(aluResponseParameters);
-            callIos(aluResponseParameters);
+            waitForIpn();
+            callIos(orderReference);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -101,9 +106,9 @@ public class ClientUsageExample {
         }
     }
 
-    private static void callAlu() throws CommunicationException, InvalidXmlResponseParsingException, InvalidSignatureException {
+    private static void callAlu(String orderReference) throws CommunicationException, InvalidXmlResponseParsingException, InvalidSignatureException {
 
-        final List<NameValuePair> aluRequestParameters = aluRequestParametersBuilder.buildRequestParameters();
+        final List<NameValuePair> aluRequestParameters = aluRequestParametersBuilder.buildRequestParameters(orderReference);
 
         final List<NameValuePair> aluResponseParameters = aluClient.call(aluRequestParameters);
 
@@ -126,15 +131,12 @@ public class ClientUsageExample {
         return ipnRequestProcessor.getRequestParameters();
     }
 
-    private static void waitForIpn(List<NameValuePair> aluResponseParameters) {
-        String refNo = "";
-        for (NameValuePair parameter: aluResponseParameters) {
-            if (parameter.getName().equals("REFNO")) {
-                refNo = parameter.getValue();
-            }
-        }
+    private static void setExpectedIpn(String orderReference) {
+        ipnRequestProcessor.setExpectedIpn(orderReference);
+    }
 
-        ipnRequestProcessor.waitForIpn(refNo);
+    private static void waitForIpn() {
+        ipnRequestProcessor.waitForIpn();
     }
 
     private static void callIdn(List<NameValuePair> ipnRequestParameters) throws CommunicationException, InvalidXmlResponseParsingException, InvalidSignatureException {
@@ -160,8 +162,8 @@ public class ClientUsageExample {
         }
     }
 
-    private static void callIos(List<NameValuePair> aluResponseParameters) throws CommunicationException, InvalidXmlResponseParsingException, InvalidSignatureException {
-        final List<NameValuePair> iosRequestParameters = iosRequestParametersBuilder.build(aluResponseParameters);
+    private static void callIos(String orderReference) throws CommunicationException, InvalidXmlResponseParsingException, InvalidSignatureException {
+        final List<NameValuePair> iosRequestParameters = iosRequestParametersBuilder.build(orderReference);
 
         final List<NameValuePair> iosResponseParameters = iosClient.call(iosRequestParameters);
 

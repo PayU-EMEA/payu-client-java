@@ -8,7 +8,7 @@ import java.util.concurrent.Semaphore;
 
 public class IpnRequestProcessor implements RequestProcessor {
 
-    public static final String DUMMY_BAD_REFNO = "dummy-123qwe-badRefNo";
+    private static final String DUMMY_BAD_REFNO = "no-expected-ipn-dummy-badRefNo";
     final private Semaphore semaphore;
     private String expectedRefNo;
 
@@ -17,7 +17,8 @@ public class IpnRequestProcessor implements RequestProcessor {
 
     public IpnRequestProcessor() {
         semaphore = new Semaphore(1);
-        waitForIpn(DUMMY_BAD_REFNO);
+        setExpectedIpn(DUMMY_BAD_REFNO);
+        waitForIpn();
     }
 
     @Override
@@ -30,10 +31,10 @@ public class IpnRequestProcessor implements RequestProcessor {
         System.out.println(requestParameters);
 
         for (NameValuePair parameter : requestParameters) {
-            if (parameter.getName().equals("REFNO")) {
-                String refNo = parameter.getValue();
-                if (!expectedRefNo.equals(refNo)) {
-                    System.out.println("IPN ERROR (ignored): bad RefNo = " + refNo + ". Expecting = " + expectedRefNo);
+            if (parameter.getName().equals("REFNOEXT")) {
+                String refNoExt = parameter.getValue();
+                if (!expectedRefNo.equals(refNoExt)) {
+                    System.out.println("IPN ERROR (ignored): bad RefNoExt = " + refNoExt + ". Expecting = " + expectedRefNo);
                     System.out.println("Waiting for successful IPN request...");
                     return false;
                 }
@@ -59,8 +60,11 @@ public class IpnRequestProcessor implements RequestProcessor {
         System.out.println("Waiting for successful IPN request...");
     }
 
-    public void waitForIpn(String refNo) {
-        expectedRefNo = refNo;
+    public void setExpectedIpn(String orderReference) {
+        expectedRefNo = orderReference;
+    }
+
+    public void waitForIpn() {
         semaphore.acquireUninterruptibly();
     }
 
