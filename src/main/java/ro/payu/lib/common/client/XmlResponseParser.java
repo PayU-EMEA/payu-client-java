@@ -9,10 +9,11 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
+import java.io.InputStream;
 
 public class XmlResponseParser {
 
-    public NodeList getNodeList(HttpResponse httpResponse) throws InvalidXmlResponseParsingException {
+    public NodeList getNodeList(HttpResponse httpResponse, String maineNodeName) throws InvalidXmlResponseParsingException {
         final DocumentBuilder builder;
         try {
             builder = DocumentBuilderFactory.newInstance().newDocumentBuilder();
@@ -30,8 +31,8 @@ public class XmlResponseParser {
         }
 
         NodeList firstLevelChildren = responseDocument.getChildNodes();
-        if (firstLevelChildren.getLength() != 1 || !firstLevelChildren.item(0).getNodeName().equals("EPAYMENT")) {
-            throw new InvalidXmlResponseParsingException("Missing response EPAYMENT node");
+        if (firstLevelChildren.getLength() != 1 || !firstLevelChildren.item(0).getNodeName().equals(maineNodeName)) {
+            throw new InvalidXmlResponseParsingException("Missing response " + maineNodeName + " node");
         }
 
         return firstLevelChildren;

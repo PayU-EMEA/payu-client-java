@@ -1,4 +1,4 @@
-package ro.payu.lib.alu;
+package ro.payu.lib.ios;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -12,11 +12,11 @@ import ro.payu.lib.common.client.XmlResponseParser;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AluResponseParser implements ApiResponseParser {
+public class IosResponseParser implements ApiResponseParser {
 
     private XmlResponseParser xmlResponseParser;
 
-    public AluResponseParser(XmlResponseParser xmlResponseParser) {
+    public IosResponseParser(XmlResponseParser xmlResponseParser) {
         this.xmlResponseParser = xmlResponseParser;
     }
 
@@ -24,7 +24,7 @@ public class AluResponseParser implements ApiResponseParser {
 
         final List<NameValuePair> responseParameters = new ArrayList<>();
 
-        final NodeList firstLevelChildren = xmlResponseParser.getNodeList(httpResponse, "EPAYMENT");
+        final NodeList firstLevelChildren = xmlResponseParser.getNodeList(httpResponse, "Order");
         final NodeList nodes = firstLevelChildren.item(0).getChildNodes();
 
         for (int i = 0; i < nodes.getLength(); i++) {

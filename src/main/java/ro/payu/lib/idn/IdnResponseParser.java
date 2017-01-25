@@ -23,7 +23,7 @@ public class IdnResponseParser implements ApiResponseParser {
 
         final List<NameValuePair> responseParameters = new ArrayList<>();
 
-        final NodeList firstLevelChildren = xmlResponseParser.getNodeList(httpResponse);
+        final NodeList firstLevelChildren = xmlResponseParser.getNodeList(httpResponse, "EPAYMENT");
 
         if (firstLevelChildren.getLength() > 1) {
             throw new InvalidXmlResponseParsingException("The response XML must contain only the EPAYMENT node");

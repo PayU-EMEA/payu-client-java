@@ -5,6 +5,8 @@ import ro.payu.example.alu.AluRequestParametersBuilder;
 import ro.payu.example.alu.AluResponseInterpreter;
 import ro.payu.example.idn.IdnRequestParametersBuilder;
 import ro.payu.example.idn.IdnResponseInterpreter;
+import ro.payu.example.ios.IosRequestParametersBuilder;
+import ro.payu.example.ios.IosResponseInterpreter;
 import ro.payu.example.ipn.IpnHttpServerBuilder;
 import ro.payu.example.ipn.IpnRequestProcessor;
 import ro.payu.example.irn.IrnRequestParametersBuilder;
@@ -20,6 +22,9 @@ import ro.payu.lib.common.server.ApiHttpServer;
 import ro.payu.lib.idn.IdnAuthenticationService;
 import ro.payu.lib.idn.IdnClient;
 import ro.payu.lib.idn.IdnResponseParser;
+import ro.payu.lib.ios.IosAuthenticationService;
+import ro.payu.lib.ios.IosClient;
+import ro.payu.lib.ios.IosResponseParser;
 import ro.payu.lib.irn.IrnAuthenticationService;
 import ro.payu.lib.irn.IrnClient;
 import ro.payu.lib.irn.IrnResponseParser;
@@ -51,9 +56,13 @@ public class ClientUsageExample {
     private static AluClient aluClient;
     private static IdnClient idnClient;
     private static IrnClient irnClient;
+    private static IosClient iosClient;
 
     private static AluRequestParametersBuilder aluRequestParametersBuilder;
     private static AluResponseInterpreter aluResponseInterpreter;
+
+    private static IosRequestParametersBuilder iosRequestParametersBuilder;
+    private static IosResponseInterpreter iosResponseInterpreter;
 
     private static IdnRequestParametersBuilder idnRequestParametersBuilder;
     private static IdnResponseInterpreter idnResponseInterpreter;
@@ -73,14 +82,17 @@ public class ClientUsageExample {
             callAlu();
             final List<NameValuePair> aluResponseParameters = getAluResponseParameters();
             waitForIpn(aluResponseParameters);
+            callIos(aluResponseParameters);
 
             final List<NameValuePair> ipnRequestParameters = getIpnRequestParameters();
 
             callIdn(ipnRequestParameters);
             waitForIpn(aluResponseParameters);
+            callIos(aluResponseParameters);
 
             callIrn(ipnRequestParameters);
             waitForIpn(aluResponseParameters);
+            callIos(aluResponseParameters);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -148,6 +160,17 @@ public class ClientUsageExample {
         }
     }
 
+    private static void callIos(List<NameValuePair> aluResponseParameters) throws CommunicationException, InvalidXmlResponseParsingException, InvalidSignatureException {
+        final List<NameValuePair> iosRequestParameters = iosRequestParametersBuilder.build(aluResponseParameters);
+
+        final List<NameValuePair> iosResponseParameters = iosClient.call(iosRequestParameters);
+
+        iosResponseInterpreter.interpretResponseParameters(iosResponseParameters);
+        if (!iosResponseInterpreter.isSuccess(iosResponseParameters)) {
+            throw new RuntimeException("IOS response ERROR!");
+        }
+    }
+
     private static void setUp() {
 
         final ApiHttpClient apiHttpClient = new ApiHttpClient(SERVER_HOST, SERVER_PORT, SERVER_SCHEMA);
@@ -162,6 +185,12 @@ public class ClientUsageExample {
                 new AluResponseParser(xmlResponseParser)
         ));
 
+        iosClient = new IosClient(new ApiClient(
+                apiHttpClient,
+                new IosAuthenticationService(authenticationService),
+                new IosResponseParser(xmlResponseParser)
+        ));
+        
         idnClient = new IdnClient(new ApiClient(
                 apiHttpClient,
                 new IdnAuthenticationService(authenticationService),
@@ -176,6 +205,9 @@ public class ClientUsageExample {
 
         aluRequestParametersBuilder = new AluRequestParametersBuilder(MERCHANT_CODE);
         aluResponseInterpreter = new AluResponseInterpreter();
+
+        iosRequestParametersBuilder = new IosRequestParametersBuilder(MERCHANT_CODE);
+        iosResponseInterpreter = new IosResponseInterpreter();
 
         idnRequestParametersBuilder = new IdnRequestParametersBuilder(MERCHANT_CODE);
         idnResponseInterpreter = new IdnResponseInterpreter();
