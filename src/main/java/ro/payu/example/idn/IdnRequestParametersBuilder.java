@@ -2,7 +2,9 @@ package ro.payu.example.idn;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
+import org.joda.money.Money;
 
+import java.text.DecimalFormat;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
@@ -18,31 +20,14 @@ public class IdnRequestParametersBuilder {
         this.merchantCode = merchantCode;
     }
 
-    public List<NameValuePair> build(List<NameValuePair> ipnRequestParameters) {
+    public List<NameValuePair> build(String payuOrderReference, Money amount) {
         String idnDate = LocalDateTime.now(ZoneOffset.UTC).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-
-        String orderRef = "";
-        String amount = "";
-        String currency = "";
-        for (NameValuePair pair : ipnRequestParameters) {
-            switch (pair.getName()) {
-                case "REFNO":
-                    orderRef = pair.getValue();
-                    break;
-                case "IPN_TOTALGENERAL":
-                    amount = pair.getValue();
-                    break;
-                case "CURRENCY":
-                    currency = pair.getValue();
-                    break;
-            }
-        }
 
         final List<NameValuePair> idnRequestParameters = new ArrayList<>();
         idnRequestParameters.add(new BasicNameValuePair("MERCHANT", merchantCode));
-        idnRequestParameters.add(new BasicNameValuePair("ORDER_REF", orderRef));
-        idnRequestParameters.add(new BasicNameValuePair("ORDER_AMOUNT", amount));
-        idnRequestParameters.add(new BasicNameValuePair("ORDER_CURRENCY", currency));
+        idnRequestParameters.add(new BasicNameValuePair("ORDER_REF", payuOrderReference));
+        idnRequestParameters.add(new BasicNameValuePair("ORDER_AMOUNT", new DecimalFormat("#.##").format(amount.getAmount().doubleValue())));
+        idnRequestParameters.add(new BasicNameValuePair("ORDER_CURRENCY", amount.getCurrencyUnit().getCode()));
         idnRequestParameters.add(new BasicNameValuePair("IDN_DATE", idnDate));
         return idnRequestParameters;
     }

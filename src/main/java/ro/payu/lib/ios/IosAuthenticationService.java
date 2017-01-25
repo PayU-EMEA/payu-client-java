@@ -6,7 +6,6 @@ import ro.payu.lib.common.authentication.AuthenticationService;
 import ro.payu.lib.common.authentication.InvalidSignatureException;
 import ro.payu.lib.common.authentication.SignatureCalculator;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 

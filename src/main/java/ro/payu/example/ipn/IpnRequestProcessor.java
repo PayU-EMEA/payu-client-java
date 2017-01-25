@@ -13,7 +13,6 @@ public class IpnRequestProcessor implements RequestProcessor {
     private String expectedRefNo;
 
     private List<NameValuePair> requestParameters;
-    private boolean isError;
 
     public IpnRequestProcessor() {
         semaphore = new Semaphore(1);
@@ -24,7 +23,6 @@ public class IpnRequestProcessor implements RequestProcessor {
     @Override
     public boolean process(List<NameValuePair> requestParameters) {
         this.requestParameters = requestParameters;
-        isError = false;
 
         System.out.println();
         System.out.println("IPN incoming request:");
@@ -47,7 +45,6 @@ public class IpnRequestProcessor implements RequestProcessor {
 
     @Override
     public void error(String error, List<NameValuePair> requestParameters) {
-        isError = true;
 
         if (requestParameters != null) {
             System.out.println();
@@ -72,16 +69,4 @@ public class IpnRequestProcessor implements RequestProcessor {
         return requestParameters;
     }
 
-    public boolean isSuccess() {
-        if (isError) {
-            return false;
-        }
-
-        for (NameValuePair pair : requestParameters) {
-            if (pair.getName().equals("ORDERSTATUS") && !pair.getValue().equals("PAYMENT_AUTHORIZED")) {
-                return false;
-            }
-        }
-        return true;
-    }
 }

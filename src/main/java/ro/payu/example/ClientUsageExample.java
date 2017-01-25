@@ -1,6 +1,8 @@
 package ro.payu.example;
 
 import org.apache.http.NameValuePair;
+import org.joda.money.CurrencyUnit;
+import org.joda.money.Money;
 import ro.payu.example.alu.AluRequestParametersBuilder;
 import ro.payu.example.alu.AluResponseInterpreter;
 import ro.payu.example.idn.IdnRequestParametersBuilder;
@@ -30,6 +32,7 @@ import ro.payu.lib.irn.IrnClient;
 import ro.payu.lib.irn.IrnResponseParser;
 
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 public class ClientUsageExample {
@@ -80,22 +83,23 @@ public class ClientUsageExample {
 
         try {
             String orderReference = UUID.randomUUID().toString().substring(0, 17);
+            Money amount = Money.of(CurrencyUnit.of("TRY"), 196);
+            String payuOrderReference = "";
 
             setExpectedIpn(orderReference);
-            callAlu(orderReference);
-            final List<NameValuePair> aluResponseParameters = getAluResponseParameters();
-            waitForIpn();
-            callIos(orderReference);
-
-            final List<NameValuePair> ipnRequestParameters = getIpnRequestParameters();
-
-            setExpectedIpn(orderReference);
-            callIdn(ipnRequestParameters);
+            Map.Entry<String, Money> refNoAmountPair = callAlu(orderReference, amount);
+            amount = refNoAmountPair.getValue();
+            payuOrderReference = refNoAmountPair.getKey();
             waitForIpn();
             callIos(orderReference);
 
             setExpectedIpn(orderReference);
-            callIrn(ipnRequestParameters);
+            callIdn(payuOrderReference, amount);
+            waitForIpn();
+            callIos(orderReference);
+
+            setExpectedIpn(orderReference);
+            callIrn(payuOrderReference, amount);
             waitForIpn();
             callIos(orderReference);
 
@@ -106,29 +110,18 @@ public class ClientUsageExample {
         }
     }
 
-    private static void callAlu(String orderReference) throws CommunicationException, InvalidXmlResponseParsingException, InvalidSignatureException {
+    private static Map.Entry<String, Money> callAlu(String orderReference, Money amount) throws CommunicationException, InvalidXmlResponseParsingException, InvalidSignatureException {
 
-        final List<NameValuePair> aluRequestParameters = aluRequestParametersBuilder.buildRequestParameters(orderReference);
+        final List<NameValuePair> aluRequestParameters = aluRequestParametersBuilder.buildRequestParameters(orderReference, amount);
 
         final List<NameValuePair> aluResponseParameters = aluClient.call(aluRequestParameters);
 
-        aluResponseInterpreter.interpretResponseParameters(aluResponseParameters);
+        Map.Entry<String, Money> refNoAmountPair = aluResponseInterpreter.interpretResponseParameters(aluResponseParameters, amount);
         if (!aluResponseInterpreter.isSuccess(aluResponseParameters)) {
             throw new RuntimeException("ALU response ERROR!");
         }
-    }
 
-    private static List<NameValuePair> getAluResponseParameters() {
-        return aluResponseInterpreter.getResponseParameters();
-    }
-
-    private static List<NameValuePair> getIpnRequestParameters() {
-
-        if (ipnRequestProcessor.getRequestParameters() == null || !ipnRequestProcessor.isSuccess()) {
-            throw new RuntimeException("IPN request ERROR!");
-        }
-
-        return ipnRequestProcessor.getRequestParameters();
+        return refNoAmountPair;
     }
 
     private static void setExpectedIpn(String orderReference) {
@@ -139,9 +132,9 @@ public class ClientUsageExample {
         ipnRequestProcessor.waitForIpn();
     }
 
-    private static void callIdn(List<NameValuePair> ipnRequestParameters) throws CommunicationException, InvalidXmlResponseParsingException, InvalidSignatureException {
+    private static void callIdn(String payuOrderReference, Money amount) throws CommunicationException, InvalidXmlResponseParsingException, InvalidSignatureException {
 
-        final List<NameValuePair> idnRequestParameters = idnRequestParametersBuilder.build(ipnRequestParameters);
+        final List<NameValuePair> idnRequestParameters = idnRequestParametersBuilder.build(payuOrderReference, amount);
 
         final List<NameValuePair> idnResponseParameters = idnClient.call(idnRequestParameters);
 
@@ -151,8 +144,8 @@ public class ClientUsageExample {
         }
     }
 
-    private static void callIrn(List<NameValuePair> ipnRequestParameters) throws CommunicationException, InvalidXmlResponseParsingException, InvalidSignatureException {
-        final List<NameValuePair> irnRequestParameters = irnRequestParametersBuilder.build(ipnRequestParameters);
+    private static void callIrn(String payuOrderReference, Money amount) throws CommunicationException, InvalidXmlResponseParsingException, InvalidSignatureException {
+        final List<NameValuePair> irnRequestParameters = irnRequestParametersBuilder.build(payuOrderReference, amount);
 
         final List<NameValuePair> irnResponseParameters = irnClient.call(irnRequestParameters);
 

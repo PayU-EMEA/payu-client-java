@@ -2,7 +2,9 @@ package ro.payu.example.alu;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
+import org.joda.money.Money;
 
+import java.text.DecimalFormat;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
@@ -18,7 +20,7 @@ public class AluRequestParametersBuilder {
 
     }
 
-    public List<NameValuePair> buildRequestParameters(String orderReference) {
+    public List<NameValuePair> buildRequestParameters(String orderReference, Money amount) {
         final List<NameValuePair> parameters = new ArrayList<>();
 
         String orderData = LocalDateTime.now(ZoneOffset.UTC).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
@@ -29,16 +31,15 @@ public class AluRequestParametersBuilder {
         parameters.add(new BasicNameValuePair("BACK_REF", "https://ro.payu.local/backend/simulators/return.php"));
         parameters.add(new BasicNameValuePair("ORDER_TIMEOUT", "3000"));
 
-        parameters.add(new BasicNameValuePair("PRICES_CURRENCY", "TRY"));
+        parameters.add(new BasicNameValuePair("PRICES_CURRENCY", amount.getCurrencyUnit().getCode()));
 
         parameters.add(new BasicNameValuePair("DISCOUNT", "0"));
         parameters.add(new BasicNameValuePair("ORDER_SHIPPING", "0"));
-
         parameters.add(new BasicNameValuePair("ORDER_PCODE[0]", "TestProductCode"));
         parameters.add(new BasicNameValuePair("ORDER_PINFO[0]", "TestProductInfo"));
         parameters.add(new BasicNameValuePair("ORDER_PNAME[0]", "Test product name"));
-        parameters.add(new BasicNameValuePair("ORDER_PRICE[0]", "128.32"));
-        parameters.add(new BasicNameValuePair("ORDER_QTY[0]", "2"));
+        parameters.add(new BasicNameValuePair("ORDER_PRICE[0]", new DecimalFormat("#.##").format(amount.getAmount().doubleValue())));
+        parameters.add(new BasicNameValuePair("ORDER_QTY[0]", "1"));
         parameters.add(new BasicNameValuePair("ORDER_VAT[0]", "0"));
 
 
