@@ -34,6 +34,7 @@ public class IpnRequestProcessor implements RequestProcessor {
                 String refNo = parameter.getValue();
                 if (!expectedRefNo.equals(refNo)) {
                     System.out.println("IPN ERROR (ignored): bad RefNo = " + refNo + ". Expecting = " + expectedRefNo);
+                    System.out.println("Waiting for successful IPN request...");
                     return false;
                 }
             }
@@ -55,6 +56,7 @@ public class IpnRequestProcessor implements RequestProcessor {
 
         System.out.println();
         System.out.println("IPN ERROR (ignored): " + error);
+        System.out.println("Waiting for successful IPN request...");
     }
 
     public void waitForIpn(String refNo) {
