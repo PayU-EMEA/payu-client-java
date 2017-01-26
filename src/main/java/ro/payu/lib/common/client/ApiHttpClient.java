@@ -16,10 +16,6 @@ public class ApiHttpClient {
     private final CloseableHttpClient httpClient;
     private final HttpHost httpHost;
 
-    public ApiHttpClient(String hostname) {
-        this(hostname, 443, "https");
-    }
-
     public ApiHttpClient(String hostname, int port, String scheme) {
         httpClient = HttpClients.createDefault();
         httpHost = new HttpHost(hostname, port, scheme);

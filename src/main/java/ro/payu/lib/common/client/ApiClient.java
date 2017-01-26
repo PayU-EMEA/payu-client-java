@@ -13,9 +13,9 @@ import java.util.List;
 
 public class ApiClient {
 
-    private ApiHttpClient apiHttpClient;
-    private ApiAuthenticationService apiAuthenticationService;
-    private ApiResponseParser apiResponseParser;
+    private final ApiHttpClient apiHttpClient;
+    private final ApiAuthenticationService apiAuthenticationService;
+    private final ApiResponseParser apiResponseParser;
 
     public ApiClient(ApiHttpClient apiHttpClient, ApiAuthenticationService apiAuthenticationService, ApiResponseParser apiResponseParser) {
         this.apiHttpClient = apiHttpClient;

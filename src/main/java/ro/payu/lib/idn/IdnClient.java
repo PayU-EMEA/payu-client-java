@@ -12,7 +12,7 @@ public class IdnClient {
 
     private static final String IDN_ENDPOINT = "/order/idn.php";
 
-    private ApiClient apiClient;
+    private final ApiClient apiClient;
 
     public IdnClient(ApiClient apiClient) {
         this.apiClient = apiClient;

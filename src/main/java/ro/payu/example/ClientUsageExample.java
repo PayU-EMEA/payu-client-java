@@ -20,7 +20,7 @@ import ro.payu.lib.common.authentication.AuthenticationService;
 import ro.payu.lib.common.authentication.InvalidSignatureException;
 import ro.payu.lib.common.authentication.SignatureCalculator;
 import ro.payu.lib.common.client.*;
-import ro.payu.lib.common.server.ApiHttpServer;
+import ro.payu.example.ipn.IpnHttpServer;
 import ro.payu.lib.idn.IdnAuthenticationService;
 import ro.payu.lib.idn.IdnClient;
 import ro.payu.lib.idn.IdnResponseParser;
@@ -74,7 +74,7 @@ public class ClientUsageExample {
     private static IrnRequestParametersBuilder irnRequestParametersBuilder;
     private static IrnResponseInterpreter irnResponseInterpreter;
 
-    private static ApiHttpServer ipnHttpServer;
+    private static IpnHttpServer ipnHttpServer;
     private static IpnRequestProcessor ipnRequestProcessor;
 
     public static void main(String[] args) {

@@ -12,7 +12,7 @@ public class IrnClient {
 
     private static final String IRN_ENDPOINT = "/order/irn.php";
 
-    private ApiClient apiClient;
+    private final ApiClient apiClient;
 
     public IrnClient(ApiClient apiClient) {
         this.apiClient = apiClient;

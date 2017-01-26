@@ -13,7 +13,7 @@ import java.util.List;
 
 public class IdnResponseParser implements ApiResponseParser {
 
-    private XmlResponseParser xmlResponseParser;
+    private final XmlResponseParser xmlResponseParser;
 
     public IdnResponseParser(XmlResponseParser xmlResponseParser) {
         this.xmlResponseParser = xmlResponseParser;

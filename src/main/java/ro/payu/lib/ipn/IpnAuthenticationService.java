@@ -21,7 +21,7 @@ public class IpnAuthenticationService implements VerifyAuthenticationService {
             "IPN_DATE"
     );
 
-    private AuthenticationService authenticationService;
+    private final AuthenticationService authenticationService;
 
     public IpnAuthenticationService(AuthenticationService authenticationService) {
         this.authenticationService = authenticationService;

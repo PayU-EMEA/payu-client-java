@@ -1,16 +1,17 @@
-package ro.payu.lib.common.server;
+package ro.payu.example.ipn;
 
 
 import org.apache.http.impl.bootstrap.HttpServer;
 import org.apache.http.impl.bootstrap.ServerBootstrap;
+import ro.payu.lib.common.server.ApiHttpHandler;
 
 import java.io.IOException;
 
-public class ApiHttpServer {
+public class IpnHttpServer {
 
-    private HttpServer server;
+    private final HttpServer server;
 
-    public ApiHttpServer(String endpoint, int port, ApiHttpHandler httpHandler) {
+    public IpnHttpServer(String endpoint, int port, ApiHttpHandler httpHandler) {
 
         server = ServerBootstrap.bootstrap()
                 .setListenerPort(port)

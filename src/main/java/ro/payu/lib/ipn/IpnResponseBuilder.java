@@ -24,7 +24,7 @@ import java.util.List;
 
 public class IpnResponseBuilder implements ResponseBuilder {
 
-    private IpnAuthenticationService ipnAuthenticationService;
+    private final IpnAuthenticationService ipnAuthenticationService;
 
     public IpnResponseBuilder(IpnAuthenticationService ipnAuthenticationService) {
         this.ipnAuthenticationService = ipnAuthenticationService;

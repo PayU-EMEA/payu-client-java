@@ -19,8 +19,6 @@ public class IosRequestParametersBuilder {
     }
 
     public List<NameValuePair> build(String orderReference) {
-        String iosDate = LocalDateTime.now(ZoneOffset.UTC).format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-
         final List<NameValuePair> iosRequestParameters = new ArrayList<>();
         iosRequestParameters.add(new BasicNameValuePair("MERCHANT", merchantCode));
         iosRequestParameters.add(new BasicNameValuePair("REFNOEXT", orderReference));

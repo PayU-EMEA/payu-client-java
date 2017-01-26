@@ -13,7 +13,7 @@ import java.util.List;
 
 public class AluRequestParametersBuilder {
 
-    private String merchantCode;
+    private final String merchantCode;
 
     public AluRequestParametersBuilder(String merchantCode) {
         this.merchantCode = merchantCode;

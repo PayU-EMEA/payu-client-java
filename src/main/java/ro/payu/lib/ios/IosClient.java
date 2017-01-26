@@ -12,7 +12,7 @@ public class IosClient {
 
     private static final String IOS_ENDPOINT = "/order/ios.php";
 
-    private ApiClient apiClient;
+    private final ApiClient apiClient;
 
     public IosClient(ApiClient apiClient) {
         this.apiClient = apiClient;

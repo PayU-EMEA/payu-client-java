@@ -12,7 +12,7 @@ public class AluClient {
 
     private static final String ALU_ENDPOINT = "/order/alu/v3";
 
-    private ApiClient apiClient;
+    private final ApiClient apiClient;
 
     public AluClient(ApiClient apiClient) {
         this.apiClient = apiClient;

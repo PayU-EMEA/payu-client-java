@@ -1,7 +1,10 @@
 package ro.payu.lib.common.client;
 
 import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
 import org.w3c.dom.Document;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
@@ -9,6 +12,8 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class XmlResponseParser {
 
@@ -35,5 +40,21 @@ public class XmlResponseParser {
         }
 
         return firstLevelChildren;
+    }
+
+    public List<NameValuePair> getParametersFromNodeList(NodeList firstLevelChildren) {
+        final NodeList nodes = firstLevelChildren.item(0).getChildNodes();
+
+        final List<NameValuePair> responseParameters = new ArrayList<>();
+
+        for (int i = 0; i < nodes.getLength(); i++) {
+            Node node = nodes.item(i);
+            if (node.getNodeType() == Node.ELEMENT_NODE) {
+                String nodeName = node.getNodeName();
+                String nodeValue = node.getTextContent();
+                responseParameters.add(new BasicNameValuePair(nodeName, nodeValue));
+            }
+        }
+        return responseParameters;
     }
 }

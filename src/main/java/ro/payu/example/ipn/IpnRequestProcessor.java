@@ -65,8 +65,4 @@ public class IpnRequestProcessor implements RequestProcessor {
         semaphore.acquireUninterruptibly();
     }
 
-    public List<NameValuePair> getRequestParameters() {
-        return requestParameters;
-    }
-
 }
